@@ -1,180 +1,229 @@
-#include <stdlib.h>
-#include <stdio.h>
+﻿//-----------------------------------------------------------------------------
+///
+/// A simple Demo of using Box2D with SDL2
+///
+/// @param argc not used
+/// @param arv not used
+///
+///
+/// @return EXIT_SUCCESS
+//
 
-#include <iostream>
-
+#include <iomanip>
 #include <box2d.h>
-//#include <DebugDraw.h>
+#include <iostream>
+#include <cmath>
 #include <SDL.h>
+#include <SDL_image.h>
+
+b2World* world;
+
+const int MET2PIX = 80; // 640 / 80 = 8
+
+const int WIDTH = 640;
+const int HEIGHT = 480;
+
+const int SCALED_WIDTH = WIDTH / MET2PIX; // 4 | 3
+const int SCALED_HEIGHT = HEIGHT / MET2PIX;
+
+//1 rad × 180/π = 57,296°
+const float RAD2DEG = 180 / M_PI;
 
 using namespace std;
 
-#define PTM_RATIO 32.0
-
-SDL_Window* GameWin;
-SDL_Renderer* GameRen;
-SDL_Event event;
-
-int Width = 800, Height = 600;
-bool GameRunning = true;
-
-SDL_Rect box;
-SDL_Rect ground;
-SDL_Surface* Ball;
-SDL_Texture* Tex;
-SDL_Point center;
-
-int box_x, box_y, box_w, box_h;
-int ground_x, ground_y, ground_w, ground_h;
-
-int main(int argc, char* argv[])
+int main()
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
-	{
-		exit(0);
-	}
+    SDL_Init(SDL_INIT_EVERYTHING);
 
-	GameWin = SDL_CreateWindow("SDL Physics", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Width, Height, SDL_WINDOW_SHOWN);
-	GameRen = SDL_CreateRenderer(GameWin, -1, SDL_RENDERER_PRESENTVSYNC);
+    SDL_DisplayMode DM;
+    SDL_GetCurrentDisplayMode(0, &DM);
+    auto Width = DM.w;
+    auto Height = DM.h;
 
-	box_x = 0, box_y = 0;
-	box_w = 10, box_h = 10;
+    cout << "Width of the Screen: " << Width << endl;
+    cout << "Height of the Screen: " << Height << endl;
 
-	box.x = box_x, box.y = box_y;
-	box.w = box_w, box.h = box_h;
+    SDL_Window* window = SDL_CreateWindow("FirstGame", SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
 
-	ground_x = 0, ground_y = 540;
-	ground_w = 800, ground_h = 560;
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	ground.x = ground_x, ground.y = ground_y;
-	ground.w = ground_w, ground.h = ground_h;
+    world = new b2World(b2Vec2(0.0f, 9.81f)); // new b2World(b2Vec2(0.0f, 9.81f));
 
-	Ball = SDL_LoadBMP("ball.bmp");
-	Tex = SDL_CreateTextureFromSurface(GameRen, Ball);
+    // cartesian origin
+    float ground_x = 0.0f;
+    float ground_y = 0.0f;
 
-	center.x = box.w * 0.5f;
-	center.y = box.h - (box.w * 0.5);
+    // start ground point
+    b2Vec2 startpoint;
+    startpoint.x = -3.0f;
+    startpoint.y = 2.0;
 
-	b2Vec2 gravity(0, 9.8f);
-	bool doSleep = true;
+    // end ground point
+    b2Vec2 endpoint;
+    endpoint.x = 3;
+    endpoint.y = 2.0;
 
-	b2World* World;
-	World = new b2World(gravity);
-	World->SetGravity(gravity);
+    // LineGround
+    b2BodyDef myGroundDef;
+    myGroundDef.type = b2_staticBody;
+    myGroundDef.position.Set(ground_x, ground_y); // set the starting position x and y cartesian
+    myGroundDef.angle = 0;
 
-	b2Body* groundBody;
-	b2BodyDef groundBodyDef;
-	groundBodyDef.type = b2_staticBody;
-	groundBodyDef.position.Set((float)ground_x, (float)ground_y);
-	groundBody = World->CreateBody(&groundBodyDef);
+    b2Body* groundLineBody = world->CreateBody(&myGroundDef);
 
-	b2Body* Body;
-	b2BodyDef ballBodyDef;
-	ballBodyDef.type = b2_dynamicBody;
-	b2Vec2 ballVector;
-	ballVector.Set(10, 10);
-	ballBodyDef.angularVelocity = 0.0f;
-	ballBodyDef.linearVelocity = ballVector;
+    b2EdgeShape edgeShape;
+    edgeShape.Set(startpoint, endpoint); // length -> coordinate vector from to vector
 
-	ballBodyDef.position.Set(0, 0);
-	ballBodyDef.awake = true;
-	Body = World->CreateBody(&ballBodyDef);
+    b2FixtureDef edgeFixtureDef;
+    edgeFixtureDef.shape = &edgeShape;
+    groundLineBody->CreateFixture(&edgeFixtureDef);
 
-	b2PolygonShape groundBox;
-	b2FixtureDef boxShapeDef;
-	boxShapeDef.shape = &groundBox;
-	boxShapeDef.density = 2.0f;
-	boxShapeDef.restitution = 0.5f;
-	groundBox.SetAsBox(800, 0); //This is what I needed to fix. Orignally it was (0,800)
+    SDL_Surface* tmp_sprites;
+    tmp_sprites = IMG_Load("assets/box.png");
+    if (!tmp_sprites)
+        return EXIT_FAILURE;
 
-	groundBody->CreateFixture(&groundBox, 0);
+    SDL_Texture* texture_box = SDL_CreateTextureFromSurface(renderer, tmp_sprites);
+    SDL_FreeSurface(tmp_sprites);
 
-	b2PolygonShape dynamicBox;
+    // cartesian origin box
+    float x_box = -2.5f;
+    float y_box = -2.5f;
 
-	dynamicBox.SetAsBox(10.0f, 10.0f);
+    // size of box
+    float w_box = 0.3;
+    float h_box = 0.3;
 
-	b2FixtureDef fixtureDef;
+    // angle of the box
+    float angle_box = 45.0f; //45.0f;
 
-	fixtureDef.shape = &dynamicBox;
+    // Box
+    SDL_Rect box;
+    b2Body* Body;
 
-	fixtureDef.density = 2.0f;
-	fixtureDef.friction = 1.0f;
-	fixtureDef.restitution = 0.5f;
+    b2BodyDef boxBodyDef;
+    boxBodyDef.type = b2_dynamicBody;
+    boxBodyDef.angle = angle_box; // flips the whole thing -> 180 grad drehung
+    //boxBodyDef.angle = 0;
+    boxBodyDef.position.Set(x_box, y_box);
+    b2Vec2 vel;
+    vel.Set(0, 0.2f);
 
-	Body->CreateFixture(&fixtureDef); //this line
+    Body = world->CreateBody(&boxBodyDef);
+    Body->SetLinearVelocity(vel);
 
-	float timeStep = 1.0f / 100.0f;
+    b2PolygonShape dynamicBox;
+    dynamicBox.SetAsBox((w_box / 2.0f) - dynamicBox.m_radius, (h_box / 2.0f) - dynamicBox.m_radius); // will be 0.5 x 0.5
 
-	int velIter = 1.0;
-	int posIter = 1.0;
-	World->Step(timeStep, velIter, posIter);
+    b2FixtureDef fixtureDef;
+    fixtureDef.shape = &dynamicBox;
+    fixtureDef.density = 1;
+    fixtureDef.friction = 0.3f;
+    fixtureDef.restitution = 0.5f;
+    Body->CreateFixture(&fixtureDef);
 
-	b2Vec2 pos = Body->GetPosition();
-	float an = Body->GetAngle();
+    // box: convert Metres back to Pixels for width and height
+    box.w = w_box * MET2PIX;
+    box.h = h_box * MET2PIX;
 
-	cout << "X:" << pos.x << endl;
-	cout << "Y:" << pos.y << endl;
+    // cartesian origin of _0019_PLATF.png 89 x 22
+    float x_plat = -3.6f; // to edge
+    float y_plat = -0.14f;// to edge
 
-	while (GameRunning)
-	{
-		while (SDL_PollEvent(&event))
-		{
-			if (event.type == SDL_QUIT)
-			{
-				GameRunning = false;
-			}
+    // size of the platform
+    float w_plat = 89.0f / MET2PIX;
+    float h_plat = 22.0f / MET2PIX;
 
-			if (event.type == SDL_KEYDOWN)
-			{
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-				{
-					GameRunning = false;
-				}
+    // define a Rect for this platform and its body def
+    SDL_Rect platform;
+    b2Body* Body_platform;
 
-				if (event.key.keysym.sym == SDLK_LEFT)
-				{
-					Body->SetTransform(b2Vec2(-1, 0), 1);
-				}
-				else if (event.key.keysym.sym == SDLK_RIGHT)
-				{
-					Body->SetTransform(b2Vec2(+1, 0), 1);
-				}
-			}
-		}
+    b2BodyDef platformBoyDef;
+    platformBoyDef.type = b2_staticBody;
+    platformBoyDef.position.Set(x_plat, y_plat);
 
+    Body_platform = world->CreateBody(&platformBoyDef);
 
-		World->Step(timeStep, velIter, posIter);
+    b2PolygonShape platformTile;    // subtracting radius fixes the incorrect little gap that can appear when working with really small resolutions
+    platformTile.SetAsBox((w_plat / 2.0f) - platformTile.m_radius, (h_plat / 2.0f) - platformTile.m_radius); // subtracting the radius kills the gap issue:
+    b2FixtureDef fixturePlat;
+    fixturePlat.shape = &platformTile;
+    fixturePlat.density = 1.0f;
+    fixturePlat.friction = 0.3f;
+    fixturePlat.restitution = 0.5f;
+    Body_platform->CreateFixture(&fixturePlat);
 
-		b2Vec2 pos = Body->GetPosition();
-		float angle = Body->GetAngle();
+    // set the SDL_RECT rendering values
+    platform.w = w_plat * MET2PIX;
+    platform.h = h_plat * MET2PIX;
+    platform.x = ((SCALED_WIDTH / 2.0f) + x_plat) * MET2PIX - platform.w / 2;
+    platform.y = ((SCALED_HEIGHT / 2.0f) + y_plat) * MET2PIX - platform.h / 2;
 
-		box.x = pos.x;
-		box.y = pos.y;
+    bool close_game = false;
+    SDL_Event event;
 
-		SDL_SetRenderDrawColor(GameRen, 0, 255, 255, 0);
+    // The game Loop
+    while (close_game != true)
+    {
+        b2Vec2 pos = Body->GetPosition(); // Body = Body from box
+        float angle = Body->GetAngle();
 
-		SDL_RenderClear(GameRen);
+        // RAD2Degree
+        angle *= RAD2DEG;
 
-		//SDL_SetRenderDrawColor(GameRen, 0, 255, 0, 0);
-		//SDL_RenderFillRect(GameRen, &box);
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+                close_game = true;
 
-		SDL_RendererFlip Flip = SDL_FLIP_NONE;
+            else if (event.key.keysym.sym == SDLK_ESCAPE)
+                close_game = true;
 
-		SDL_RenderCopyEx(GameRen, Tex, NULL, &box, angle, &center, Flip);
+            else if (event.key.keysym.sym == SDLK_r)
+            {
+                Body->SetTransform(b2Vec2(x_box, y_box), angle_box);
+                Body->SetLinearVelocity(vel);
+            }
+        }
 
-		SDL_SetRenderDrawColor(GameRen, 255, 0, 0, 0);
-		SDL_RenderFillRect(GameRen, &ground);
+        // question box, update x and y destination
+        box.x = ((SCALED_WIDTH / 2.0f) + pos.x) * MET2PIX - box.w / 2;
+        box.y = ((SCALED_HEIGHT / 2.0f) + pos.y) * MET2PIX - box.h / 2;
 
-		SDL_RenderPresent(GameRen);
-	}
+        // cout << "X of box:" << setprecision(20) << box.x << endl;
+        // cout << "Y of box:" << setprecision(20) << box.y << endl;
 
-	SDL_DestroyTexture(Tex);
-	SDL_FreeSurface(Ball);
+        SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 0);
 
-	SDL_DestroyWindow(GameWin);
-	SDL_DestroyRenderer(GameRen);
+        // Draw ground platform
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 0);
+        SDL_RenderDrawLine(renderer, ((SCALED_WIDTH / 2.0f) + edgeShape.m_vertex1.x) * MET2PIX, ((SCALED_HEIGHT / 2.0f) + edgeShape.m_vertex1.y) * MET2PIX, ((SCALED_WIDTH / 2.0f) + edgeShape.m_vertex2.x) * MET2PIX, ((SCALED_HEIGHT / 2.0f) + edgeShape.m_vertex2.y) * MET2PIX);
 
-	SDL_Quit();
+        SDL_RenderCopyEx(renderer, texture_box, NULL, &box, Body->GetAngle() * RAD2DEG, NULL, SDL_FLIP_NONE);
 
-	return 0;
+        // Draw ziegl_3
+
+        // Draw box angle 45
+        //Body->SetAngularVelocity(10.0f);
+        //Body->SetFixedRotation(true);
+        //SDL_RenderDrawRect(renderer, &box);
+        //SDL_RenderFillRect(renderer, &box);
+
+        SDL_SetRenderDrawColor(renderer, 32, 70, 49, 0);
+        SDL_RenderPresent(renderer);
+
+        world->Step(1.0f / 60.0f, 6.0f, 2.0f); // update
+
+    }
+
+    // box2D delete whole world and free memory
+    delete world;
+
+    SDL_DestroyTexture(texture_box);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    return EXIT_SUCCESS;
 }
