@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     SDL_Init(SDL_INIT_VIDEO);
 
     // Create window
-    SDL_Window* window = SDL_CreateWindow("Box2D Example",
+    SDL_Window* window = SDL_CreateWindow("Box2D with SDL2",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
 
@@ -27,12 +27,12 @@ int main(int argc, char* argv[])
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
     // Create Box2D world
-    b2Vec2 gravity(0.0f, 9.8f); // 9.8 m/s^2 downwards gravity
+    b2Vec2 gravity(0.0f, -9.8f); // 9.8 m/s^2 downwards gravity
     b2World world(gravity);
 
     // Create ground body
     b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(WORLD_WIDTH / 2.0f, WORLD_HEIGHT - 0.5f);
+    groundBodyDef.position.Set(WORLD_WIDTH / 2.0f, WORLD_HEIGHT - 15.0f);
     b2Body* groundBody = world.CreateBody(&groundBodyDef);
 
     b2PolygonShape groundBox;
