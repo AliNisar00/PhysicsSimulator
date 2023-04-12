@@ -1,101 +1,126 @@
 #include <SDL.h>
 #include <box2d.h>
 
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
+const int SCREEN_FPS = 60;
+
 int main(int argc, char* argv[])
 {
     // Initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
 
     // Create a window
-    SDL_Window* window = SDL_CreateWindow("Box2D with SDL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("Box2D + SDL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
     // Create a renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     // Create a Box2D world
-    b2Vec2 gravity(0.0f, -9.81f);
-    b2World* world = new b2World(gravity);
+    b2Vec2 gravity(0.0f, 9.81f);
+    b2World world(gravity);
 
-    // Create Box2D bodies and fixtures
+    // Create a ground body
     b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(0.0f, -10.0f);
-    b2Body* groundBody = world->CreateBody(&groundBodyDef);
-    b2PolygonShape groundBox;
-    groundBox.SetAsBox(50.0f, 10.0f);
-    groundBody->CreateFixture(&groundBox, 0.0f);
+    groundBodyDef.position.Set(0.0f, SCREEN_HEIGHT);
+    b2Body* groundBody = world.CreateBody(&groundBodyDef);
 
-    b2BodyDef dynamicBodyDef;
-    dynamicBodyDef.type = b2_dynamicBody;
-    dynamicBodyDef.position.Set(0.0f, 4.0f);
-    b2Body* dynamicBody = world->CreateBody(&dynamicBodyDef);
-    b2PolygonShape dynamicBox;
-    dynamicBox.SetAsBox(1.0f, 1.0f);
+    // Create a ground shape
+    b2PolygonShape groundShape;
+    groundShape.SetAsBox(SCREEN_WIDTH, 10.0f);
+
+    // Add the ground fixture to the ground body
+    groundBody->CreateFixture(&groundShape, 0.0f);
+
+    // Create a dynamic body
+    b2BodyDef bodyDef;
+    bodyDef.type = b2_dynamicBody;
+    bodyDef.position.Set(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    b2Body* body = world.CreateBody(&bodyDef);
+
+    // Create a polygon shape for the body
+    b2PolygonShape polygonShape;
+    polygonShape.SetAsBox(50.0f, 50.0f);
+
+    // Add the polygon fixture to the body
     b2FixtureDef fixtureDef;
-    fixtureDef.shape = &dynamicBox;
+    fixtureDef.shape = &polygonShape;
     fixtureDef.density = 1.0f;
     fixtureDef.friction = 0.3f;
-    dynamicBody->CreateFixture(&fixtureDef);
+    body->CreateFixture(&fixtureDef);
 
-    // Main game loop
+    // Set up the game loop
     bool quit = false;
+    SDL_Event e;
+    Uint32 startTime, endTime, frameTime, sleepTime;
+
     while (!quit)
     {
-        // Handle events
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
+        // Get the start time of the frame
+        startTime = SDL_GetTicks();
+
+        // Process events
+        while (SDL_PollEvent(&e) != 0)
         {
-            if (event.type == SDL_QUIT)
+            if (e.type == SDL_QUIT)
             {
                 quit = true;
             }
         }
 
-        // Update the Box2D world
-        world->Step(1.0f / 60.0f, 6, 2);
-
-        // Render the Box2D bodies
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        // Clear the screen
+        SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
         SDL_RenderClear(renderer);
-        for (b2Body* body = world->GetBodyList(); body != nullptr; body = body->GetNext())
+
+        // Step the Box2D world
+        world.Step(1.0f / SCREEN_FPS, 6, 2);
+
+        // Draw the ground
+        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        b2Vec2 groundVertices[4];
+        for (int i = 0; i < 4; i++)
         {
-            if (body->GetType() == b2_staticBody)
-            {
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            }
-            else if (body->GetType() == b2_dynamicBody)
-            {
-                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-            }
-
-            b2Fixture* fixture = body->GetFixtureList();
-            while (fixture != nullptr)
-            {
-                b2PolygonShape* shape = dynamic_cast<b2PolygonShape*>(fixture->GetShape());
-                if (shape != nullptr)
-                {
-                    b2Vec2 vertices[4];
-                    for (int i = 0; i < 4; i++)
-                    {
-                        vertices[i] = body->GetWorldPoint(shape->GetVertex(i));
-                    }
-
-                    SDL_Rect rect = { (int)vertices[0].x, (int)vertices[0].y,
-                                      (int)(vertices[2].x - vertices[0].x), (int)(vertices[2].y - vertices[0].y) };
-                    SDL_RenderFillRect(renderer, &rect);
-                }
-
-                fixture = fixture->GetNext();
-            }
+            groundVertices[i] = groundBody->GetWorldPoint(groundShape.m_vertices[i]);
         }
+        SDL_RenderDrawLines(renderer, (SDL_Point*)groundVertices, 5);
 
-        // Render the screen
+        // Draw the body
+        SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+        b2Vec2 bodyVertices[4];
+        for (int i = 0; i < polygonShape.m_count; i++)
+        {
+            bodyVertices[i] = body->GetWorldPoint(polygonShape.m_vertices[i]);
+        }
+        SDL_RenderDrawLines(renderer, (SDL_Point*)bodyVertices, polygonShape.m_count + 1);
+
+        // Update the screen
         SDL_RenderPresent(renderer);
-}
 
-    // Clean up
-    delete world;
+        // Get the end time of the frame
+        endTime = SDL_GetTicks();
+
+        // Calculate the time taken to render the frame
+        frameTime = endTime - startTime;
+
+        // Calculate the amount of time to sleep to maintain a constant frame rate
+        sleepTime = (1000 / SCREEN_FPS) - frameTime;
+
+        // If there is still time to sleep, then sleep
+        if (sleepTime > 0)
+        {
+            SDL_Delay(sleepTime);
+        }
+    }
+
+    // Destroy the renderer
     SDL_DestroyRenderer(renderer);
+
+    // Destroy the window
     SDL_DestroyWindow(window);
+
+    // Quit SDL
     SDL_Quit();
 
     return 0;
+
+}
