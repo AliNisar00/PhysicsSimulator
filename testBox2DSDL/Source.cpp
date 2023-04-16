@@ -13,6 +13,15 @@ const int WINDOW_HEIGHT = 480;
 const float WORLD_WIDTH = 10.0f;
 const float WORLD_HEIGHT = 10.0f;
 
+// Helper function to check if a point is inside a box
+bool pointInBox(float x, float y, b2Vec2 boxPosition, float boxWidth, float boxHeight) {
+    if (x >= boxPosition.x - boxWidth / 2.0f && x <= boxPosition.x + boxWidth / 2.0f &&
+        y >= boxPosition.y - boxHeight / 2.0f && y <= boxPosition.y + boxHeight / 2.0f) {
+        return true;
+    }
+    return false;
+}
+
 int main(int argc, char* argv[])
 {
     // Initialize SDL
@@ -27,7 +36,7 @@ int main(int argc, char* argv[])
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
     // Create Box2D world
-    b2Vec2 gravity(0.0f, -9.8f); // 9.8 m/s^2 downwards gravity
+    b2Vec2 gravity(0.0f, -0.04f); // 9.8 m/s^2 downwards gravity
     b2World world(gravity);
 
     // Create ground body
@@ -60,6 +69,8 @@ int main(int argc, char* argv[])
 
     // Main loop
     bool quit = false;
+    bool boxSelected = false; // Flag to check if box is selected
+    b2Vec2 boxOffset; // Offset of mouse click from box center
     while (!quit)
     {
         // Handle events
@@ -70,10 +81,39 @@ int main(int argc, char* argv[])
             {
                 quit = true;
             }
+
+            // Handle mouse events
+            if (event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                int mouseX = event.button.x;
+                int mouseY = event.button.y;
+
+                // Check if mouse is within box bounds
+                float boxLeft = (boxBody->GetPosition().x - 1.0f) * SCALE;
+                float boxTop = (WORLD_HEIGHT - boxBody->GetPosition().y - 1.0f) * SCALE;
+                if (mouseX >= boxLeft && mouseX <= boxLeft + 2.0f * SCALE &&
+                    mouseY >= boxTop && mouseY <= boxTop + 2.0f * SCALE)
+                {
+                    // Set box as selected
+                    boxSelected = true;
+
+                    // Calculate offset from box center
+                    boxOffset.x = mouseX - (boxLeft + SCALE);
+                    boxOffset.y = mouseY - (boxTop + SCALE);
+                }
+            }
+            else if (event.type == SDL_MOUSEBUTTONUP)
+            {
+                // Deselect box
+                boxSelected = false;
+            }
         }
 
         // Update Box2D world
-        world.Step(1.0f / 60.0f, 6, 2);
+        if (!boxSelected) // Only update world if box is not selected
+        {
+            world.Step(1.0f / 60.0f, 6, 2);
+        }
 
         // Clear renderer
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -101,6 +141,18 @@ int main(int argc, char* argv[])
             static_cast<int>(boxHeight)
         };
         SDL_RenderFillRect(renderer, &boxRect);
+
+        // Move box if selected
+        if (boxSelected)
+        {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+
+            // Set new box position based on mouse position
+            float newBoxX = (mouseX - boxOffset.x) / SCALE + 1.0f;
+            float newBoxY = WORLD_HEIGHT - (mouseY - boxOffset.y) / SCALE - 1.0f;
+            boxBody->SetTransform(b2Vec2(newBoxX, newBoxY), boxBody->GetAngle());
+        }
 
         // Present renderer
         SDL_RenderPresent(renderer);
