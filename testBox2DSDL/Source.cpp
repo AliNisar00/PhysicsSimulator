@@ -154,6 +154,41 @@ int main(int argc, char* argv[])
             boxBody->SetTransform(b2Vec2(newBoxX, newBoxY), boxBody->GetAngle());
         }
 
+        // Create a b2MouseJoint pointer at the beginning
+        b2MouseJoint* mouseJoint = NULL;
+
+        // Create a b2MouseJointDef object and set its properties
+        b2MouseJointDef mouseJointDef;
+        mouseJointDef.bodyA = groundBody; // ground body is usually a static body
+        mouseJointDef.bodyB = boxBody;
+        mouseJointDef.target.Set(newBoxX, newBoxY);
+        mouseJointDef.maxForce = 1000.0f * boxBody->GetMass(); // set a maximum force for the joint
+
+        // Create a b2MouseJoint object using the world object and the b2MouseJointDef object
+        mouseJoint = (b2MouseJoint*)world->CreateJoint(&mouseJointDef);
+
+        // Update the target position of the mouse joint in the main loop based on the mouse position
+        if (boxSelected && mouseJoint != NULL)
+        {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+
+            float newBoxX = (mouseX - boxOffset.x) / SCALE + 1.0f;
+            float newBoxY = WORLD_HEIGHT - (mouseY - boxOffset.y) / SCALE - 1.0f;
+
+            mouseJoint->SetTarget(b2Vec2(newBoxX, newBoxY));
+        }
+
+        // Destroy the mouse joint in the main loop when the mouse button is released
+        if (event.type == SDL_MOUSEBUTTONUP)
+        {
+            if (mouseJoint != NULL)
+            {
+                world->DestroyJoint(mouseJoint);
+                mouseJoint = NULL;
+            }
+        }
+
         // Present renderer
         SDL_RenderPresent(renderer);
     }
