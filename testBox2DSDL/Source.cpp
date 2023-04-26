@@ -13,6 +13,9 @@ const int WINDOW_HEIGHT = 480;
 const float WORLD_WIDTH = 10.0f;
 const float WORLD_HEIGHT = 10.0f;
 
+// Pre declarations
+float newBoxX, newBoxY;
+
 // Helper function to check if a point is inside a box
 bool pointInBox(float x, float y, b2Vec2 boxPosition, float boxWidth, float boxHeight) {
     if (x >= boxPosition.x - boxWidth / 2.0f && x <= boxPosition.x + boxWidth / 2.0f &&
@@ -36,13 +39,13 @@ int main(int argc, char* argv[])
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
     // Create Box2D world
-    b2Vec2 gravity(0.0f, -0.04f); // 9.8 m/s^2 downwards gravity
-    b2World world(gravity);
+    b2Vec2 gravity(0.0f, -2.0f); // 9.8 m/s^2 downwards gravity
+    b2World* world = new b2World(gravity);
 
     // Create ground body
     b2BodyDef groundBodyDef;
     groundBodyDef.position.Set(WORLD_WIDTH / 2.0f, WORLD_HEIGHT - 15.0f);
-    b2Body* groundBody = world.CreateBody(&groundBodyDef);
+    b2Body* groundBody = world->CreateBody(&groundBodyDef);
 
     b2PolygonShape groundBox;
     groundBox.SetAsBox(WORLD_WIDTH / 2.0f, 0.5f);
@@ -56,7 +59,7 @@ int main(int argc, char* argv[])
     b2BodyDef boxBodyDef;
     boxBodyDef.type = b2_dynamicBody;
     boxBodyDef.position.Set(WORLD_WIDTH / 2.0f, 2.0f);
-    b2Body* boxBody = world.CreateBody(&boxBodyDef);
+    b2Body* boxBody = world->CreateBody(&boxBodyDef);
 
     b2PolygonShape boxShape;
     boxShape.SetAsBox(1.0f, 1.0f);
@@ -112,7 +115,7 @@ int main(int argc, char* argv[])
         // Update Box2D world
         if (!boxSelected) // Only update world if box is not selected
         {
-            world.Step(1.0f / 60.0f, 6, 2);
+            world->Step(1.0f / 60.0f, 6, 2);
         }
 
         // Clear renderer
