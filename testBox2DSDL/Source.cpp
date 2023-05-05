@@ -142,7 +142,7 @@ void destroyObjects()
     while (body != nullptr) {
         b2Body* next = body->GetNext();   // get the next body
         world->DestroyBody(body);         // destroy the current body
-        body = next;                      // movee to the next body
+        body = next;                      // move to the next body
     }
 }
 
@@ -150,7 +150,9 @@ void display()
 {
     SDL_SetRenderDrawColor(renderer, 255, 182, 193, 255);
     SDL_RenderClear(renderer);
+
     b2Body* tmp = world->GetBodyList();
+
     while (tmp)
     {
         if (tmp->GetFixtureList()->GetShape()->GetType() == b2Shape::e_circle)
@@ -190,15 +192,19 @@ int main(int argc, char** argv)
     SDL_Init(SDL_INIT_VIDEO);
     window = SDL_CreateWindow("Box2D", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, 0);
+
     Uint32 start;
     SDL_Event event;
     bool running = true;
+
     init();
+
     bool addingTriangle = false;
     bool addingRect = false;
     bool addingCircle = false;
     bool windEnabled = false;
     bool gravityEnabled = true;
+
     while (running)
     {
         start = SDL_GetTicks();
@@ -284,8 +290,10 @@ int main(int argc, char** argv)
         if (1000.0f / 60.0f > SDL_GetTicks() - start)
             SDL_Delay(1000.0f / 60.0f - (SDL_GetTicks() - start));
     }
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
     return 0;
 }
