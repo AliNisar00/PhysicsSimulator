@@ -11,6 +11,8 @@ b2World* world;
 SDL_Window* window;
 SDL_Renderer* renderer;
 
+b2Body* draggedBody = nullptr;
+
 b2Body* addCircle(int x, int y, int r, bool dyn = true)
 {
     b2BodyDef bodydef;
@@ -85,7 +87,6 @@ void drawTriangle(b2Vec2 vertices[], b2Vec2 center)
 }
 
 
-
 b2Body* addRect(int x, int y, int w, int h, bool dyn = true)
 {
     b2BodyDef bodydef;
@@ -124,6 +125,7 @@ void addBorders() {
     addRect(WIDTH / 2, 25, 800, 10, false); //top
 
 }
+
 
 void init()
 {
@@ -227,6 +229,26 @@ int main(int argc, char** argv)
                         addCircle(event.button.x, event.button.y, 8, true);
                     }
                 }
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    b2Vec2 mousePos{event.button.x * P2M, event.button.y * P2M};
+                    b2AABB aabb;
+                    aabb.lowerBound = mousePos - b2Vec2{ 0.001f, 0.001f };
+                    aabb.upperBound = mousePos + b2Vec2{ 0.001f, 0.001f };
+                    b2QueryCallback callback{ [](b2Fixture* fixture) -> bool {
+                        return fixture->GetBody()->GetType() == b2_dynamicBody;
+                    } };
+                    world->QueryAABB(&callback, aabb);
+                    if (callback.m_fixture)
+                    {
+                        draggedBody = callback.m_fixture->GetBody();
+                    }
+                }
+                break;
+            case SDL_MOUSEBUTTONUP:
+                if (event.button.button == SDL_BUTTON_LEFT)
+                {
+                    draggedBody = nullptr;
+                }
                 break;
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_s) {
@@ -282,13 +304,23 @@ int main(int argc, char** argv)
                     addBorders();
                 }
                 break;
-
+            }
+            if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_LEFT) && draggedBody)
+            {
+                b2Vec2 mousePos{ event.button.x * P2M, event.button.y * P2M };
+                draggedBody->SetTransform(mousePos, draggedBody->GetAngle());
             }
         }
         display();
         world->Step(1.0f / 60.0f, 8, 3);  // update
         if (1000.0f / 60.0f > SDL_GetTicks() - start)
             SDL_Delay(1000.0f / 60.0f - (SDL_GetTicks() - start));
+
+        if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_LEFT) && draggedBody)
+{
+    b2Vec2 mousePos{ event.button.x * P2M, event.button.y * P2M };
+    draggedBody->SetTransform(mousePos, draggedBody->GetAngle());
+}
     }
 
     SDL_DestroyRenderer(renderer);
