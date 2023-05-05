@@ -1,209 +1,291 @@
 #include <iostream>
-#include <box2d.h>
 #include <SDL.h>
+#include <SDL_image.h>
+#include <box2d.h>
 
-// Convert meters to pixels
-const float SCALE = 30.0f;
+const int WIDTH = 640;
+const int HEIGHT = 480;
+const float M2P = 20;
+const float P2M = 1 / M2P;
+b2World* world;
+SDL_Window* window;
+SDL_Renderer* renderer;
 
-// Window dimensions
-const int WINDOW_WIDTH = 640;
-const int WINDOW_HEIGHT = 480;
+b2Body* addCircle(int x, int y, int r, bool dyn = true)
+{
+    b2BodyDef bodydef;
+    bodydef.position.Set(x * P2M, y * P2M);
+    if (dyn)
+        bodydef.type = b2_dynamicBody;
+    b2Body* body = world->CreateBody(&bodydef);
 
-// Box2D world dimensions
-const float WORLD_WIDTH = 10.0f;
-const float WORLD_HEIGHT = 10.0f;
+    b2CircleShape shape;
+    shape.m_radius = r * P2M;
+    shape.m_p.Set(0, 0);
 
-// Pre declarations
-float newBoxX, newBoxY;
-
-// Helper function to check if a point is inside a box
-bool pointInBox(float x, float y, b2Vec2 boxPosition, float boxWidth, float boxHeight) {
-    if (x >= boxPosition.x - boxWidth / 2.0f && x <= boxPosition.x + boxWidth / 2.0f &&
-        y >= boxPosition.y - boxHeight / 2.0f && y <= boxPosition.y + boxHeight / 2.0f) {
-        return true;
-    }
-    return false;
+    b2FixtureDef fixturedef;
+    fixturedef.shape = &shape;
+    fixturedef.density = 0.5;
+    fixturedef.friction = 0.8;
+    fixturedef.restitution = 0.8;
+    body->CreateFixture(&fixturedef);
+    //body->GetUserData();
+    return body;
 }
 
-int main(int argc, char* argv[])
+void drawCircle(SDL_Renderer* renderer, b2Vec2 center, float r, b2Vec2 offset = { 0,0 })
 {
-    // Initialize SDL
-    SDL_Init(SDL_INIT_VIDEO);
-
-    // Create window
-    SDL_Window* window = SDL_CreateWindow("Box2D with SDL2",
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
-
-    // Create renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
-
-    // Create Box2D world
-    b2Vec2 gravity(0.0f, -2.0f); // 9.8 m/s^2 downwards gravity
-    b2World* world = new b2World(gravity);
-
-    // Create ground body
-    b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(WORLD_WIDTH / 2.0f, WORLD_HEIGHT - 15.0f);
-    b2Body* groundBody = world->CreateBody(&groundBodyDef);
-
-    b2PolygonShape groundBox;
-    groundBox.SetAsBox(WORLD_WIDTH / 2.0f, 0.5f);
-
-    b2FixtureDef groundFixtureDef;
-    groundFixtureDef.shape = &groundBox;
-
-    groundBody->CreateFixture(&groundFixtureDef);
-
-    // Create dynamic box body
-    b2BodyDef boxBodyDef;
-    boxBodyDef.type = b2_dynamicBody;
-    boxBodyDef.position.Set(WORLD_WIDTH / 2.0f, 2.0f);
-    b2Body* boxBody = world->CreateBody(&boxBodyDef);
-
-    b2PolygonShape boxShape;
-    boxShape.SetAsBox(1.0f, 1.0f);
-
-    b2FixtureDef boxFixtureDef;
-    boxFixtureDef.shape = &boxShape;
-    boxFixtureDef.density = 1.0f;
-
-    boxBody->CreateFixture(&boxFixtureDef);
-
-    // Main loop
-    bool quit = false;
-    bool boxSelected = false; // Flag to check if box is selected
-    b2Vec2 boxOffset; // Offset of mouse click from box center
-    while (!quit)
+    const int PRECISION = 30;
+    SDL_SetRenderDrawColor(renderer, 3, 37, 126, 255);
+    SDL_Point vertices[PRECISION];
+    for (int i = 0; i < PRECISION; i++)
     {
-        // Handle events
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
+        float theta = (i / (float)PRECISION) * 2 * b2_pi;
+        float x = r * cos(theta);
+        float y = r * sin(theta);
+        vertices[i] = { (int)((center.x + offset.x + x) * M2P), (int)((center.y + offset.y + y) * M2P) };
+    }
+    SDL_RenderDrawLines(renderer, vertices, PRECISION);
+}
+
+b2Body* addTriangle(int x, int y, int sideLength, bool dyn = true)
+{
+    b2BodyDef bodydef;
+    bodydef.position.Set(x * P2M, y * P2M);
+    if (dyn)
+        bodydef.type = b2_dynamicBody;
+    b2Body* body = world->CreateBody(&bodydef);
+
+    b2Vec2 vertices[3];
+    float height = sideLength * sqrt(3.0f) / 2.0f;
+    vertices[0].Set(-sideLength / 2.0f, -height / 2.0f);
+    vertices[1].Set(0.0f, height / 2.0f);
+    vertices[2].Set(sideLength / 2.0f, -height / 2.0f);
+
+    b2PolygonShape shape;
+    shape.Set(vertices, 3);
+
+    b2FixtureDef fixturedef;
+    fixturedef.shape = &shape;
+    fixturedef.density = 1.0;
+    body->CreateFixture(&fixturedef);
+    return body;
+}
+
+void drawTriangle(b2Vec2 vertices[], b2Vec2 center)
+{
+    SDL_SetRenderDrawColor(renderer, 0, 110, 51, 255);
+    SDL_Point points[4];
+    for (int i = 0; i < 3; i++)
+    {
+        points[i] = { (int)(vertices[i].x * M2P), (int)(vertices[i].y * M2P) };
+    }
+    points[3] = { (int)(vertices[0].x * M2P), (int)(vertices[0].y * M2P) };
+    SDL_RenderDrawLines(renderer, points, 4);
+}
+
+
+
+b2Body* addRect(int x, int y, int w, int h, bool dyn = true)
+{
+    b2BodyDef bodydef;
+    bodydef.position.Set(x * P2M, y * P2M);
+    if (dyn)
+        bodydef.type = b2_dynamicBody;
+    b2Body* body = world->CreateBody(&bodydef);
+
+    b2PolygonShape shape;
+    shape.SetAsBox(P2M * w / 2, P2M * h / 2);
+
+    b2FixtureDef fixturedef;
+    fixturedef.shape = &shape;
+    fixturedef.density = 1.0;
+    body->CreateFixture(&fixturedef);
+    return body;
+}
+
+void drawRect(b2Vec2 vertices[], b2Vec2 center)
+{
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_Point points[5];
+    for (int i = 0; i < 4; i++)
+    {
+        points[i] = { (int)(vertices[i].x * M2P), (int)(vertices[i].y * M2P) };
+    }
+    points[4] = { (int)(vertices[0].x * M2P), (int)(vertices[0].y * M2P) };
+    SDL_RenderDrawLines(renderer, points, 5);
+}
+
+void addBorders() {
+
+    addRect(WIDTH / 2, HEIGHT - 30, 800, 10, false); //floor
+    addRect(WIDTH / 30, HEIGHT - 90, 10, 800, false); //leftBorder
+    addRect(618, HEIGHT - 90, 10, 800, false); //rightBorder
+    addRect(WIDTH / 2, 25, 800, 10, false); //top
+
+}
+
+void init()
+{
+    world = new b2World(b2Vec2(0.0f, 9.81f));
+
+    addBorders();
+
+    for (int i = 0; i < 250; i++) {
+        addCircle(WIDTH / 2, HEIGHT / 2, 8, true);
+    }
+}
+
+void destroyObjects()
+{
+    b2Body* body = world->GetBodyList();  // get the first body
+    while (body != nullptr) {
+        b2Body* next = body->GetNext();   // get the next body
+        world->DestroyBody(body);         // destroy the current body
+        body = next;                      // movee to the next body
+    }
+}
+
+void display()
+{
+    SDL_SetRenderDrawColor(renderer, 255, 182, 193, 255);
+    SDL_RenderClear(renderer);
+    b2Body* tmp = world->GetBodyList();
+    while (tmp)
+    {
+        if (tmp->GetFixtureList()->GetShape()->GetType() == b2Shape::e_circle)
         {
-            if (event.type == SDL_QUIT)
-            {
-                quit = true;
-            }
-
-            // Handle mouse events
-            if (event.type == SDL_MOUSEBUTTONDOWN)
-            {
-                int mouseX = event.button.x;
-                int mouseY = event.button.y;
-
-                // Check if mouse is within box bounds
-                float boxLeft = (boxBody->GetPosition().x - 1.0f) * SCALE;
-                float boxTop = (WORLD_HEIGHT - boxBody->GetPosition().y - 1.0f) * SCALE;
-                if (mouseX >= boxLeft && mouseX <= boxLeft + 2.0f * SCALE &&
-                    mouseY >= boxTop && mouseY <= boxTop + 2.0f * SCALE)
+            b2CircleShape* c = ((b2CircleShape*)tmp->GetFixtureList()->GetShape());
+            drawCircle(renderer, tmp->GetWorldCenter(), c->m_radius, c->m_p);
+        }
+        else if (tmp->GetFixtureList()->GetShape()->GetType() == b2Shape::e_polygon)
+        {
+            b2PolygonShape* poly = (b2PolygonShape*)tmp->GetFixtureList()->GetShape();
+            if (poly->m_count == 4) {
+                b2Vec2 vertices[4];
+                for (int i = 0; i < 4; i++)
                 {
-                    // Set box as selected
-                    boxSelected = true;
-
-                    // Calculate offset from box center
-                    boxOffset.x = mouseX - (boxLeft + SCALE);
-                    boxOffset.y = mouseY - (boxTop + SCALE);
+                    vertices[i] = tmp->GetWorldPoint(poly->m_vertices[i]);
                 }
+                drawRect(vertices, tmp->GetWorldCenter());
             }
-            else if (event.type == SDL_MOUSEBUTTONUP)
-            {
-                // Deselect box
-                boxSelected = false;
-            }
-        }
-
-        // Update Box2D world
-        if (!boxSelected) // Only update world if box is not selected
-        {
-            world->Step(1.0f / 60.0f, 6, 2);
-        }
-
-        // Clear renderer
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderClear(renderer);
-
-        // Draw ground
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_Rect groundRect = {
-            0,
-            static_cast<int>(WORLD_HEIGHT * SCALE - (groundBody->GetPosition().y + 0.5f) * SCALE),
-            static_cast<int>(WORLD_WIDTH * SCALE),
-            static_cast<int>(0.5f * SCALE)
-        };
-        SDL_RenderFillRect(renderer, &groundRect);
-
-        // Draw box
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        float boxWidth = 2.0f * SCALE;
-        float boxHeight = 2.0f * SCALE;
-        b2Vec2 boxPosition = boxBody->GetPosition();
-        SDL_Rect boxRect = {
-            static_cast<int>((boxPosition.x - 1.0f) * SCALE),
-            static_cast<int>((WORLD_HEIGHT - boxPosition.y - 1.0f) * SCALE),
-            static_cast<int>(boxWidth),
-            static_cast<int>(boxHeight)
-        };
-        SDL_RenderFillRect(renderer, &boxRect);
-
-        // Move box if selected
-        if (boxSelected)
-        {
-            int mouseX, mouseY;
-            SDL_GetMouseState(&mouseX, &mouseY);
-
-            // Set new box position based on mouse position
-            float newBoxX = (mouseX - boxOffset.x) / SCALE + 1.0f;
-            float newBoxY = WORLD_HEIGHT - (mouseY - boxOffset.y) / SCALE - 1.0f;
-            boxBody->SetTransform(b2Vec2(newBoxX, newBoxY), boxBody->GetAngle());
-        }
-
-        // Create a b2MouseJoint pointer at the beginning
-        b2MouseJoint* mouseJoint = NULL;
-
-        // Create a b2MouseJointDef object and set its properties
-        b2MouseJointDef mouseJointDef;
-        mouseJointDef.bodyA = groundBody; // ground body is usually a static body
-        mouseJointDef.bodyB = boxBody;
-        mouseJointDef.target.Set(newBoxX, newBoxY);
-        mouseJointDef.maxForce = 1000.0f * boxBody->GetMass(); // set a maximum force for the joint
-
-        // Create a b2MouseJoint object using the world object and the b2MouseJointDef object
-        mouseJoint = (b2MouseJoint*)world->CreateJoint(&mouseJointDef);
-
-        // Update the target position of the mouse joint in the main loop based on the mouse position
-        if (boxSelected && mouseJoint != NULL)
-        {
-            int mouseX, mouseY;
-            SDL_GetMouseState(&mouseX, &mouseY);
-
-            float newBoxX = (mouseX - boxOffset.x) / SCALE + 1.0f;
-            float newBoxY = WORLD_HEIGHT - (mouseY - boxOffset.y) / SCALE - 1.0f;
-
-            mouseJoint->SetTarget(b2Vec2(newBoxX, newBoxY));
-        }
-
-        // Destroy the mouse joint in the main loop when the mouse button is released
-        if (event.type == SDL_MOUSEBUTTONUP)
-        {
-            if (mouseJoint != NULL)
-            {
-                world->DestroyJoint(mouseJoint);
-                mouseJoint = NULL;
+            else if (poly->m_count == 3) {
+                b2Vec2 vertices[3];
+                for (int i = 0; i < 3; i++)
+                {
+                    vertices[i] = tmp->GetWorldPoint(poly->m_vertices[i]);
+                }
+                drawTriangle(vertices, tmp->GetWorldCenter());
             }
         }
-
-        // Present renderer
-        SDL_RenderPresent(renderer);
+        tmp = tmp->GetNext();
     }
 
-    // Destroy renderer
+    SDL_RenderPresent(renderer);
+}
+
+
+int main(int argc, char** argv)
+{
+    SDL_Init(SDL_INIT_VIDEO);
+    window = SDL_CreateWindow("Box2D", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+    renderer = SDL_CreateRenderer(window, -1, 0);
+    Uint32 start;
+    SDL_Event event;
+    bool running = true;
+    init();
+    bool addingTriangle = false;
+    bool addingRect = false;
+    bool addingCircle = false;
+    bool windEnabled = false;
+    bool gravityEnabled = true;
+    while (running)
+    {
+        start = SDL_GetTicks();
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+            case SDL_QUIT:
+                running = false;
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                if (event.button.button == SDL_BUTTON_RIGHT) {
+                    if (addingRect) {
+                        addRect(event.button.x, event.button.y, 15, 15, true);
+                    }
+                    else if (addingTriangle) {
+                        addTriangle(event.button.x, event.button.y, 1, true);
+                    }
+                    else if (addingCircle) {
+                        addCircle(event.button.x, event.button.y, 8, true);
+                    }
+                }
+                break;
+            case SDL_KEYDOWN:
+                if (event.key.keysym.sym == SDLK_s) {
+                    addingRect = true;
+                    addingTriangle = false;
+                    addingCircle = false;
+                }
+                else if (event.key.keysym.sym == SDLK_t) {
+                    addingTriangle = true;
+                    addingRect = false;
+                    addingCircle = false;
+                }
+                else if (event.key.keysym.sym == SDLK_c) {
+                    addingCircle = true;
+                    addingRect = false;
+                    addingTriangle = false;
+                }
+                else if (event.key.keysym.sym == SDLK_w) {
+
+                    windEnabled = !windEnabled;
+
+                    if (windEnabled) {
+                        world->SetGravity(b2Vec2(9.81f, 9.81f));
+                    }
+                    else {
+                        world->SetGravity(b2Vec2(0.0f, 9.81f));
+                    }
+                }
+                else if (event.key.keysym.sym == SDLK_g) {
+
+                    gravityEnabled = !gravityEnabled;
+
+                    if (gravityEnabled) {
+                        world->SetGravity(b2Vec2(0.0f, 9.81f));
+                    }
+                    else {
+                        world->SetGravity(b2Vec2(0.0f, 0.0f));
+                    }
+                }
+                else if (event.key.keysym.sym == SDLK_u)
+                {
+                    world->SetGravity(b2Vec2(0.0f, -9.81f));
+                }
+                else if (event.key.keysym.sym == SDLK_b)
+                {
+                    addCircle(WIDTH / 7, HEIGHT / 7, 2.5, true);
+                }
+                else if (event.key.keysym.sym == SDLK_r)
+                {
+                    // destroy all Box2D objects
+                    destroyObjects();
+                    //add borders again
+                    addBorders();
+                }
+                break;
+
+            }
+        }
+        display();
+        world->Step(1.0f / 60.0f, 8, 3);  // update
+        if (1000.0f / 60.0f > SDL_GetTicks() - start)
+            SDL_Delay(1000.0f / 60.0f - (SDL_GetTicks() - start));
+    }
     SDL_DestroyRenderer(renderer);
-
-    // Destroy window
     SDL_DestroyWindow(window);
-
-    // Quit SDL
     SDL_Quit();
-
     return 0;
 }
