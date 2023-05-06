@@ -7,9 +7,12 @@ const int WIDTH = 640;
 const int HEIGHT = 480;
 const float M2P = 20;
 const float P2M = 1 / M2P;
+
 b2World* world;
 SDL_Window* window;
 SDL_Renderer* renderer;
+
+b2Body* selectedBody = nullptr;
 
 b2Body* addCircle(int x, int y, int r, bool dyn = true)
 {
@@ -125,6 +128,22 @@ void addBorders() {
 
 }
 
+void selectBody(b2Vec2 point)
+{
+    // Check if the mouse is hovering over any of the bodies in the physics world
+    for (b2Body* body = world->GetBodyList(); body; body = body->GetNext())
+    {
+        if (body->GetFixtureList())
+        {
+            if (body->GetFixtureList()->TestPoint(point))
+            {
+                selectedBody = body;
+                break;
+            }
+        }
+    }
+}
+
 void init()
 {
     world = new b2World(b2Vec2(0.0f, 9.81f));
@@ -227,7 +246,22 @@ int main(int argc, char** argv)
                         addCircle(event.button.x, event.button.y, 8, true);
                     }
                 }
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    selectBody(b2Vec2(event.button.x * P2M, event.button.y * P2M));
+                }
                 break;
+            case SDL_MOUSEMOTION:
+                if (selectedBody)
+                {
+                    // moving the selected body to the current mouse position
+                    selectedBody->SetTransform(b2Vec2(event.motion.x * P2M, event.motion.y * P2M), selectedBody->GetAngle());
+                }
+                break;
+            /*
+            case SDL_MOUSEBUTTONUP:
+                destroy selectedBody;
+                break;
+            */
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_s) {
                     addingRect = true;
