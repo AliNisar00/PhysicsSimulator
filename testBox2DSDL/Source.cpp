@@ -12,7 +12,7 @@ SDL_Window* window;
 SDL_Renderer* renderer;
 
 // declaring a ground body pointer
-b2Body* groundBody = nullptr;
+// b2Body* groundBody = nullptr; // removing the pointer definition temporarily
 
 b2Body* draggedObject = nullptr; // to keep track of currently dragged object
 b2Vec2 mouseOffset; // to track the offset between an object's position and mouse position
