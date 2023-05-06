@@ -30,7 +30,7 @@ b2Body* addCircle(int x, int y, int r, bool dyn = true)
     fixturedef.shape = &shape;
     fixturedef.density = 0.5;
     fixturedef.friction = 0.8;
-    fixturedef.restitution = 0.8;
+    fixturedef.restitution = 1.1;
     body->CreateFixture(&fixturedef);
     //body->GetUserData();
     return body;
@@ -71,6 +71,7 @@ b2Body* addTriangle(int x, int y, int sideLength, bool dyn = true)
     b2FixtureDef fixturedef;
     fixturedef.shape = &shape;
     fixturedef.density = 1.0;
+    fixturedef.restitution = 1.1;
     body->CreateFixture(&fixturedef);
     return body;
 }
@@ -103,6 +104,7 @@ b2Body* addRect(int x, int y, int w, int h, bool dyn = true)
     b2FixtureDef fixturedef;
     fixturedef.shape = &shape;
     fixturedef.density = 1.0;
+    fixturedef.restitution = 1.1;
     body->CreateFixture(&fixturedef);
     return body;
 }
@@ -223,6 +225,7 @@ int main(int argc, char** argv)
     bool addingCircle = false;
     bool windEnabled = false;
     bool gravityEnabled = true;
+    bool leftMouseDown = false; // Flag to keep track of whether left mouse button is down
 
     while (running)
     {
@@ -237,7 +240,7 @@ int main(int argc, char** argv)
             case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_RIGHT) {
                     if (addingRect) {
-                        addRect(event.button.x, event.button.y, 15, 15, true);
+                        addRect(event.button.x, event.button.y, 5, 15, true);
                     }
                     else if (addingTriangle) {
                         addTriangle(event.button.x, event.button.y, 1, true);
@@ -248,20 +251,19 @@ int main(int argc, char** argv)
                 }
                 if (event.button.button == SDL_BUTTON_LEFT) {
                     selectBody(b2Vec2(event.button.x * P2M, event.button.y * P2M));
+                    leftMouseDown = true; // Set flag to indicate left mouse button is down
                 }
                 break;
             case SDL_MOUSEMOTION:
-                if (selectedBody)
+                if (selectedBody && leftMouseDown) // Update selected body position only if left mouse button is down
                 {
-                    // moving the selected body to the current mouse position
                     selectedBody->SetTransform(b2Vec2(event.motion.x * P2M, event.motion.y * P2M), selectedBody->GetAngle());
                 }
                 break;
-            /*
             case SDL_MOUSEBUTTONUP:
-                destroy selectedBody;
+                selectedBody = nullptr;
+                leftMouseDown = false; // Reset flag when left mouse button is released
                 break;
-            */
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_s) {
                     addingRect = true;
@@ -319,6 +321,13 @@ int main(int argc, char** argv)
 
             }
         }
+        // Update selected body position if left mouse button is still down
+        if (selectedBody && leftMouseDown)
+        {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            selectedBody->SetTransform(b2Vec2(mouseX * P2M, mouseY * P2M), selectedBody->GetAngle());
+        }
         display();
         world->Step(1.0f / 60.0f, 8, 3);  // update
         if (1000.0f / 60.0f > SDL_GetTicks() - start)
@@ -330,4 +339,5 @@ int main(int argc, char** argv)
     SDL_Quit();
 
     return 0;
+
 }
