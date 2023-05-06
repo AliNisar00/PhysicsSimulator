@@ -11,11 +11,16 @@ b2World* world;
 SDL_Window* window;
 SDL_Renderer* renderer;
 
+// declaring a ground body pointer
 b2Body* groundBody = nullptr;
 
 b2Body* draggedObject = nullptr; // to keep track of currently dragged object
 b2Vec2 mouseOffset; // to track the offset between an object's position and mouse position
 b2MouseJoint* mouseJoint = nullptr;
+
+// creating the ground body
+b2BodyDef groundBodyDef;
+groundBodyDef.type = b2_staticBody; // Set body type as static
 
 b2Body* addCircle(int x, int y, int r, bool dyn = true)
 {
