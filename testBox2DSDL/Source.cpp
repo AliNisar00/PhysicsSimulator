@@ -11,6 +11,8 @@ b2World* world;
 SDL_Window* window;
 SDL_Renderer* renderer;
 
+b2Body* groundBody = nullptr;
+
 b2Body* draggedObject = nullptr; // to keep track of currently dragged object
 b2Vec2 mouseOffset; // to track the offset between an object's position and mouse position
 b2MouseJoint* mouseJoint = nullptr;
