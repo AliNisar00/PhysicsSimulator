@@ -11,6 +11,10 @@ b2World* world;
 SDL_Window* window;
 SDL_Renderer* renderer;
 
+b2Body* draggedObject = nullptr; // to keep track of currently dragged object
+b2Vec2 mouseOffset; // to track the offset between an object's position and mouse position
+b2MouseJoint* mouseJoint = nullptr;
+
 b2Body* addCircle(int x, int y, int r, bool dyn = true)
 {
     b2BodyDef bodydef;
@@ -180,6 +184,16 @@ void display()
                 drawTriangle(vertices, tmp->GetWorldCenter());
             }
         }
+        /* OPTIONAL CODE TO HAVE HIGHLIGHTING FOR SELECTED OBJECT BEING MOVED AROUND; CODE INCOMPLETE
+        if (tmp == draggedObject) {
+            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);  // yellow outline for the dragged object
+            // draw the shape based on its type (circle, rectangle, triangle)
+        }
+        else {
+            SDL_SetRenderDrawColor(renderer, 255, 182, 193, 255);  // default color for other objects
+            // draw the shape based on its type (circle, rectangle, triangle)
+        }
+        */
         tmp = tmp->GetNext();
     }
 
@@ -227,7 +241,53 @@ int main(int argc, char** argv)
                         addCircle(event.button.x, event.button.y, 8, true);
                     }
                 }
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    // Check if the mouse is hovering over any object
+                    b2Vec2 mousePos(event.button.x * P2M, event.button.y * P2M);
+                    b2AABB aabb;
+                    b2Vec2 d(0.001f, 0.001f);
+                    aabb.lowerBound = mousePos - d;
+                    aabb.upperBound = mousePos + d;
+                    b2MouseJointDef md;
+                    md.bodyA = world->GetGroundBody();
+                    md.bodyB = nullptr;
+                    md.target = mousePos;
+                    md.maxForce = 1000.0f * draggedBody->GetMass();
+                    draggedObject = nullptr;
+
+                    // Query the world to find overlapping shapes
+                    QueryCallback callback(mousePos);
+                    world->QueryAABB(&callback, aabb);
+
+                    if (callback.fixture) {
+                        // Get the body associated with the fixture
+                        b2Body* body = callback.fixture->GetBody();
+
+                        // Ensure the body is dynamic (movable) and not a ground/body
+                        if (body->GetType() == b2_dynamicBody && body != groundBody) {
+                            draggedObject = body;
+                            mouseOffset = body->GetLocalPoint(mousePos);
+
+                            // Create a mouse joint to enable dragging
+                            md.bodyB = body;
+                            md.target = mousePos;
+                            md.collideConnected = true;
+                            mouseJoint = (b2MouseJoint*)world->CreateJoint(&md);
+                        }
+                    }
                 break;
+            case SDL_MOUSEMOTION:
+                // if a body is being dragged, update its position
+                if (draggedObject) {
+                    b2Vec2 newPos(event.motion.x * P2M, event.motion.y * P2M);
+                    b2Vec2 newPos(event.motion.x * P2M, event.motion.y * P2M);
+                    newPos -= mouseOffset;
+
+                    // Update the position of the dragged body
+                    draggedObject->SetTransform(newPos, draggedObject->GetAngle());
+
+                    // Move the mouse joint target to the new position
+                    mouseJoint->SetTarget(newPos);
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_s) {
                     addingRect = true;
@@ -282,7 +342,6 @@ int main(int argc, char** argv)
                     addBorders();
                 }
                 break;
-
             }
         }
         display();
