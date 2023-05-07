@@ -14,6 +14,16 @@ SDL_Renderer* renderer;
 
 b2Body* selectedBody = nullptr;
 
+b2Body* carBody;
+b2Body* wheel1;
+b2Body* wheel2;
+b2Body* wheel3;
+b2Body* wheel4;
+b2RevoluteJoint* joint1;
+b2RevoluteJoint* joint2;
+b2RevoluteJoint* joint3;
+b2RevoluteJoint* joint4;
+
 b2Body* addCircle(int x, int y, int r, bool dyn = true)
 {
     b2BodyDef bodydef;
@@ -30,7 +40,7 @@ b2Body* addCircle(int x, int y, int r, bool dyn = true)
     fixturedef.shape = &shape;
     fixturedef.density = 0.5;
     fixturedef.friction = 0.8;
-    fixturedef.restitution = 1.1;
+    fixturedef.restitution = 1.0;
     body->CreateFixture(&fixturedef);
     //body->GetUserData();
     return body;
@@ -71,7 +81,7 @@ b2Body* addTriangle(int x, int y, int sideLength, bool dyn = true)
     b2FixtureDef fixturedef;
     fixturedef.shape = &shape;
     fixturedef.density = 1.0;
-    fixturedef.restitution = 1.1;
+    fixturedef.restitution = 1.0;
     body->CreateFixture(&fixturedef);
     return body;
 }
@@ -104,10 +114,11 @@ b2Body* addRect(int x, int y, int w, int h, bool dyn = true)
     b2FixtureDef fixturedef;
     fixturedef.shape = &shape;
     fixturedef.density = 1.0;
-    fixturedef.restitution = 1.1;
+    fixturedef.restitution = 0.0;
     body->CreateFixture(&fixturedef);
     return body;
 }
+
 
 void drawRect(b2Vec2 vertices[], b2Vec2 center)
 {
@@ -120,6 +131,33 @@ void drawRect(b2Vec2 vertices[], b2Vec2 center)
     points[4] = { (int)(vertices[0].x * M2P), (int)(vertices[0].y * M2P) };
     SDL_RenderDrawLines(renderer, points, 5);
 }
+
+void addCar(int x, int y, int w, int h)
+{
+    // Add the car body
+    carBody = addRect(x, y, w, h);
+
+    wheel1 = addCircle(x - w / 2, y + h / 2, h / 2.5);
+    wheel2 = addCircle(x + w / 2, y + h / 2, h / 2.5);
+    //wheel3 = addCircle(x - w / 2, y - h / 2, h / 2.5); 
+    //wheel4 = addCircle(x + w / 2, y - h / 2, h / 2.5);
+
+    // Add the revolute joints
+    b2RevoluteJointDef jointdef1, jointdef2, jointdef3, jointdef4;
+    jointdef1.Initialize(carBody, wheel1, wheel1->GetWorldCenter());
+    jointdef2.Initialize(carBody, wheel2, wheel2->GetWorldCenter());
+    //jointdef3.Initialize(carBody, wheel3, wheel3->GetWorldCenter()); 
+    //jointdef4.Initialize(carBody, wheel4, wheel4->GetWorldCenter()); 
+    jointdef1.enableMotor = true;
+    jointdef2.enableMotor = true;
+    //jointdef3.enableMotor = true;
+    //jointdef4.enableMotor = true;
+    joint1 = (b2RevoluteJoint*)world->CreateJoint(&jointdef1);
+    joint2 = (b2RevoluteJoint*)world->CreateJoint(&jointdef2);
+    //joint3 = (b2RevoluteJoint*)world->CreateJoint(&jointdef3); 
+    //joint4 = (b2RevoluteJoint*)world->CreateJoint(&jointdef4); 
+}
+
 
 void addBorders() {
 
@@ -152,9 +190,9 @@ void init()
 
     addBorders();
 
-    for (int i = 0; i < 250; i++) {
-        addCircle(WIDTH / 2, HEIGHT / 2, 8, true);
-    }
+    //   for (int i = 0; i < 250; i++) {
+    //       addCircle(WIDTH / 2, HEIGHT / 2, 8, true);
+    //   }
 }
 
 void destroyObjects()
@@ -226,6 +264,7 @@ int main(int argc, char** argv)
     bool windEnabled = false;
     bool gravityEnabled = true;
     bool leftMouseDown = false; // Flag to keep track of whether left mouse button is down
+    bool rotateEnabled = false; // Flag to keep track of whether rotation is enabled or disabled
 
     while (running)
     {
@@ -240,7 +279,7 @@ int main(int argc, char** argv)
             case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_RIGHT) {
                     if (addingRect) {
-                        addRect(event.button.x, event.button.y, 5, 15, true);
+                        addRect(event.button.x, event.button.y, 15, 15, true);
                     }
                     else if (addingTriangle) {
                         addTriangle(event.button.x, event.button.y, 1, true);
@@ -317,10 +356,39 @@ int main(int argc, char** argv)
                     //add borders again
                     addBorders();
                 }
-                break;
+                else if (event.key.keysym.sym == SDLK_p) { // Toggle rotation
+                    rotateEnabled = !rotateEnabled;
 
+                    if (!rotateEnabled) {
+
+                        for (b2Body* body = world->GetBodyList(); body != nullptr; body = body->GetNext()) {
+
+                            if (body->GetType() == b2_dynamicBody) {
+                                body->SetAngularVelocity(0); // Set the angular velocity of the body to 0
+                            }
+                        }
+                    }
+
+                }
+                else if (event.key.keysym.sym == SDLK_m) { // Toggle rotation
+                    addCar(WIDTH / 2, HEIGHT / 2, 90, 30);
+                }
+                else if (event.key.keysym.sym == SDLK_LEFT) { // Move car backwards
+                    carBody->ApplyForceToCenter(b2Vec2(-45.0f, 0.0f), true);
+                }
+                else if (event.key.keysym.sym == SDLK_RIGHT) { // Move car forwards
+                    carBody->ApplyForceToCenter(b2Vec2(45.0f, 0.0f), true);
+                }
+                else if (event.key.keysym.sym == SDLK_UP) { // Move car upwards in zero gravity
+                    carBody->ApplyForceToCenter(b2Vec2(.0f, -45.0f), true);
+                }
+                else if (event.key.keysym.sym == SDLK_DOWN) { // Move car downwards in zero gravity
+                    carBody->ApplyForceToCenter(b2Vec2(0.0f, 45.0f), true);
+                }
+                break;
             }
         }
+
         // Update selected body position if left mouse button is still down
         if (selectedBody && leftMouseDown)
         {
@@ -328,6 +396,18 @@ int main(int argc, char** argv)
             SDL_GetMouseState(&mouseX, &mouseY);
             selectedBody->SetTransform(b2Vec2(mouseX * P2M, mouseY * P2M), selectedBody->GetAngle());
         }
+
+        // Apply rotation if enabled
+        if (rotateEnabled) {
+            // Apply rotation to each object
+            for (b2Body* body = world->GetBodyList(); body != nullptr; body = body->GetNext()) {
+                // Check if body is a dynamic type
+                if (body->GetType() == b2_dynamicBody) {
+                    body->SetAngularVelocity(50); // Set the angular velocity of the body to 50
+                }
+            }
+        }
+
         display();
         world->Step(1.0f / 60.0f, 8, 3);  // update
         if (1000.0f / 60.0f > SDL_GetTicks() - start)
