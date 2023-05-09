@@ -374,16 +374,16 @@ int main(int argc, char** argv)
                     addCar(WIDTH / 2, HEIGHT / 2, 90, 30);
                 }
                 else if (event.key.keysym.sym == SDLK_LEFT) { // Move car backwards
-                    carBody->ApplyForceToCenter(b2Vec2(-45.0f, 0.0f), true);
+                    carBody->ApplyForceToCenter(b2Vec2(-150.0f, 0.0f), true);
                 }
                 else if (event.key.keysym.sym == SDLK_RIGHT) { // Move car forwards
-                    carBody->ApplyForceToCenter(b2Vec2(45.0f, 0.0f), true);
+                    carBody->ApplyForceToCenter(b2Vec2(150.0f, 0.0f), true);
                 }
                 else if (event.key.keysym.sym == SDLK_UP) { // Move car upwards in zero gravity
-                    carBody->ApplyForceToCenter(b2Vec2(.0f, -45.0f), true);
+                    carBody->ApplyForceToCenter(b2Vec2(.0f, -150.0f), true);
                 }
                 else if (event.key.keysym.sym == SDLK_DOWN) { // Move car downwards in zero gravity
-                    carBody->ApplyForceToCenter(b2Vec2(0.0f, 45.0f), true);
+                    carBody->ApplyForceToCenter(b2Vec2(0.0f, 150.0f), true);
                 }
                 break;
             }
