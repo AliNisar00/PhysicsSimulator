@@ -13,7 +13,7 @@ SDL_Window* window;
 SDL_Renderer* renderer;
 
 b2Body* selectedBody = nullptr;
- 
+
 b2Body* carBody;
 b2Body* wheel1;
 b2Body* wheel2;
