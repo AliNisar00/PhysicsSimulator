@@ -213,10 +213,10 @@ void addCar(int x, int y, int w, int h)
 
 void addBorders() {
 
-    addRect(WIDTH / 2, HEIGHT - 30, 800, 10, false); //floor
-    addRect(WIDTH / 30, HEIGHT - 90, 10, 800, false); //leftBorder
-    addRect(618, HEIGHT - 90, 10, 800, false); //rightBorder
-    addRect(WIDTH / 2, 25, 800, 10, false); //top
+    square.addRect(WIDTH / 2, HEIGHT - 30, 800, 10, false); //floor
+    square.addRect(WIDTH / 30, HEIGHT - 90, 10, 800, false); //leftBorder
+    square.addRect(618, HEIGHT - 90, 10, 800, false); //rightBorder
+    square.addRect(WIDTH / 2, 25, 800, 10, false); //top
 
 }
 
@@ -331,7 +331,7 @@ int main(int argc, char** argv)
             case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_RIGHT) {
                     if (addingRect) {
-                        addRect(event.button.x, event.button.y, 15, 15, true);
+                        square.addRect(event.button.x, event.button.y, 15, 15, true);
                     }
                     else if (addingTriangle) {
                         addTriangle(event.button.x, event.button.y, 1, true);
