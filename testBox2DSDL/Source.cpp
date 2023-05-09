@@ -137,9 +137,6 @@ b2Body* addTriangle(int x, int y, int sideLength, bool dyn = true)
     return body;
 }
 
-//THIS IS A TEST
-
-
 void drawTriangle(b2Vec2 vertices[], b2Vec2 center)
 {
     SDL_SetRenderDrawColor(renderer, 0, 110, 51, 255);

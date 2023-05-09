@@ -76,13 +76,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\SDL2 %28for visual studio%29\include;C:\Users\Administrator\source\repos\testSDL\box2d\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SDL2 %28for visual studio%29\lib\x64;C:\Users\Administrator\source\repos\testSDL\box2d\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>box2d.lib;SDL2.lib;SDL2main.lib;ShLwApi.Lib;shell32.lib;SDL2_ttf.lib;SDL2_mixer.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -93,15 +90,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\SDL2 %28for visual studio%29\include;C:\Users\Administrator\source\repos\testSDL\box2d\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SDL2 %28for visual studio%29\lib\x64;C:\Users\Administrator\source\repos\testSDL\box2d\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>box2d.lib;SDL2.lib;SDL2main.lib;ShLwApi.Lib;shell32.lib;SDL2_ttf.lib;SDL2_mixer.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -110,13 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\SDL2 %28for visual studio%29\include;C:\Users\Administrator\source\repos\testSDL\box2d\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Box2D\include\box2d;C:\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SDL2 %28for visual studio%29\lib\x64;C:\Users\Administrator\source\repos\testSDL\box2d\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>box2d.lib;SDL2.lib;SDL2main.lib;ShLwApi.Lib;shell32.lib;SDL2_ttf.lib;SDL2_mixer.lib;SDL2_image.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Box2D\build\bin\Debug;C:\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>box2d.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,15 +121,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\SDL2 %28for visual studio%29\include;C:\Users\Administrator\source\repos\testSDL\box2d\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\SDL2 %28for visual studio%29\lib\x64;C:\Users\Administrator\source\repos\testSDL\box2d\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>box2d.lib;SDL2.lib;SDL2main.lib;ShLwApi.Lib;shell32.lib;SDL2_ttf.lib;SDL2_mixer.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
