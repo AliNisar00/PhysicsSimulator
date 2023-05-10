@@ -27,3 +27,7 @@ void Car::addCar(int x, int y, int w, int h)
     //joint3 = (b2RevoluteJoint*)world->CreateJoint(&jointdef3); 
     //joint4 = (b2RevoluteJoint*)world->CreateJoint(&jointdef4);
 }
+
+b2Body* Car::getCarBody() {
+    return carBody;
+}

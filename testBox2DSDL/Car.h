@@ -7,7 +7,6 @@ class Car
     Square* sq1;
     Circle* c1;
 
-public:
     b2Body* carBody;
     b2Body* wheel1;
     b2Body* wheel2;
@@ -18,5 +17,8 @@ public:
     b2RevoluteJoint* joint3;
     b2RevoluteJoint* joint4;
 
+public:
+
+    b2Body* getCarBody();
     void addCar(int x, int y, int w, int h);
 };
