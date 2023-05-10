@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Borders.cpp" />
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="Circle.cpp" />
     <ClCompile Include="Constants.cpp" />
@@ -139,6 +140,7 @@
     <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Borders.h" />
     <ClInclude Include="Car.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="Constants.h" />

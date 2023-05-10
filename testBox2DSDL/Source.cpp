@@ -9,6 +9,8 @@
 #include "Triangle.h"
 #include "Circle.h"
 #include "Car.h"
+#include "Borders.h"
+
 
 void drawRect(b2Vec2 vertices[], b2Vec2 center)
 {
@@ -51,28 +53,6 @@ void drawTriangle(b2Vec2 vertices[], b2Vec2 center)
     SDL_RenderDrawLines(renderer, points, 4);
 }
 
-
-class Borders : public Square
-{
-
-private:
-
-    Square* bords;
-
-public:
-
-    void addBorders() {
-        bords->addRect(WIDTH / 2, HEIGHT - 30, 1300, 10, false); //floor
-        bords->addRect(WIDTH / 30, 250, 10, 800, false); //leftBorder
-        bords->addRect(632, 250, 10, 800, false); //middle
-        bords->addRect(1236, 250, 10, 800, false); //rightBorder
-        bords->addRect(WIDTH / 2, 25, 1300, 10, false); //top
-    }
-
-    ~Borders() {
-        delete bords;
-    }
-};
 
 void selectBody(b2Vec2 point)
 {

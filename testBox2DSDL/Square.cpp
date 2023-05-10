@@ -1,6 +1,4 @@
 #include "Square.h"
-#include "InitialSetup.h"
-#include "Constants.h"
 
 b2Body* Square::addRect(int x, int y, int w, int h, bool dyn)
 {
@@ -21,4 +19,7 @@ b2Body* Square::addRect(int x, int y, int w, int h, bool dyn)
     return body;
 }
 
-void Square::displayShape() {}
+void Square::displayShape()
+{
+
+}

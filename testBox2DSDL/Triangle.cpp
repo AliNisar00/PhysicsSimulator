@@ -1,6 +1,4 @@
 #include "Triangle.h"
-#include "InitialSetup.h"
-#include "Constants.h"
 
 b2Body* Triangle::addTriangle(int x, int y, int sideLength, bool dyn)
 {
@@ -27,4 +25,7 @@ b2Body* Triangle::addTriangle(int x, int y, int sideLength, bool dyn)
     return body;
 }
 
-void Triangle::displayShape() {}
+void Triangle::displayShape() 
+{
+
+}
