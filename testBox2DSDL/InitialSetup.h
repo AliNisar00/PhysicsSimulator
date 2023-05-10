@@ -4,8 +4,8 @@
 #include <SDL_image.h>
 #include <box2d.h>
 
-b2World* world;
-SDL_Window* window;
-SDL_Renderer* renderer;
+extern b2World* world;
+extern SDL_Window* window;
+extern SDL_Renderer* renderer;
 
-b2Body* selectedBody = nullptr;
+extern b2Body* selectedBody;

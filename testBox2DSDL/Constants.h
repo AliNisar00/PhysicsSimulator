@@ -1,6 +1,6 @@
 #pragma once
 
-const int WIDTH = 1280;
-const int HEIGHT = 640;
-const float M2P = 20;
-const float P2M = 1 / M2P;
+extern const int WIDTH;
+extern const int HEIGHT;
+extern const float M2P;
+extern const float P2M;
