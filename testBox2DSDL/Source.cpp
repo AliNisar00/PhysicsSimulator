@@ -154,7 +154,7 @@ int main(int argc, char** argv)
     Borders* b1 = new Borders;
     Car* car = new Car;
 
-    b2Body* carBody = car->getCarBody();
+    //b2Body* carBody = car->getCarBody();
 
 
 
@@ -268,16 +268,16 @@ int main(int argc, char** argv)
                     car->addCar(WIDTH - 350, HEIGHT / 2, 90, 30);
                 }
                 else if (event.key.keysym.sym == SDLK_LEFT) { // Move car backwards
-                    carBody->ApplyForceToCenter(b2Vec2(-150.0f, 0.0f), true);
+                    car->carBody->ApplyForceToCenter(b2Vec2(-150.0f, 0.0f), true);
                 }
                 else if (event.key.keysym.sym == SDLK_RIGHT) { // Move car forwards
-                    carBody->ApplyForceToCenter(b2Vec2(150.0f, 0.0f), true);
+                    car->carBody->ApplyForceToCenter(b2Vec2(150.0f, 0.0f), true);
                 }
                 else if (event.key.keysym.sym == SDLK_UP) { // Move car upwards in zero gravity
-                    carBody->ApplyForceToCenter(b2Vec2(.0f, -150.0f), true);
+                    car->carBody->ApplyForceToCenter(b2Vec2(.0f, -150.0f), true);
                 }
                 else if (event.key.keysym.sym == SDLK_DOWN) { // Move car downwards in zero gravity
-                    carBody->ApplyForceToCenter(b2Vec2(0.0f, 150.0f), true);
+                    car->carBody->ApplyForceToCenter(b2Vec2(0.0f, 150.0f), true);
                 }
                 else if (event.key.keysym.sym == SDLK_ESCAPE)
                 {
@@ -317,7 +317,7 @@ int main(int argc, char** argv)
     delete cir;
     delete tri;
     delete car;
-    carBody = nullptr;
+    //carBody = nullptr;
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
