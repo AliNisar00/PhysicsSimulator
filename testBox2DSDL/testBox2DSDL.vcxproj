@@ -132,6 +132,8 @@
   <ItemGroup>
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="Circle.cpp" />
+    <ClCompile Include="Constants.cpp" />
+    <ClCompile Include="InitialSetup.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Square.cpp" />
     <ClCompile Include="Triangle.cpp" />
