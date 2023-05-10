@@ -1,6 +1,4 @@
 #include "Circle.h"
-#include "InitialSetup.h"
-#include "Constants.h"
 
 b2Body* Circle::addCircle(int x, int y, int r, bool dyn)
 {
@@ -23,4 +21,7 @@ b2Body* Circle::addCircle(int x, int y, int r, bool dyn)
     return body;
 }
 
-void Circle::displayShape() {}
+void Circle::displayShape() 
+{
+
+}

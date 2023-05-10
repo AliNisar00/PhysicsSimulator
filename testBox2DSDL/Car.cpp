@@ -1,7 +1,4 @@
-#pragma once
 #include "Car.h"
-#include "InitialSetup.h"
-#include "Constants.h"
 
 void Car::addCar(int x, int y, int w, int h)
 {
