@@ -1,42 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Borders">
-    <Position X="2" Y="4.25" Width="1.5" />
+    <Position X="0.5" Y="4.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAQEAAAAAACAAAAAAAAAAAAA=</HashCode>
-      <FileName>Source.cpp</FileName>
+      <FileName>Borders.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Car">
-    <Position X="5" Y="4.25" Width="1.5" />
+    <Position X="3.5" Y="4.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAEAAAAAAAAAAAAkACAAAAAAAAAABAEAAAAAA=</HashCode>
       <FileName>Car.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Circle">
-    <Position X="4.25" Y="2.25" Width="1.5" />
+    <Position X="2.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAE=</HashCode>
       <FileName>Circle.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Shape">
-    <Position X="4.25" Y="0.5" Width="1.5" />
+    <Position X="2.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=</HashCode>
       <FileName>Shape.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Square">
-    <Position X="2" Y="2.25" Width="1.5" />
+    <Position X="0.5" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAE=</HashCode>
       <FileName>Square.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Triangle">
-    <Position X="6.5" Y="2.25" Width="1.5" />
+    <Position X="5" Y="2.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAE=</HashCode>
       <FileName>Triangle.h</FileName>
