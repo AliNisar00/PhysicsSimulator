@@ -147,16 +147,12 @@ int main(int argc, char** argv)
     bool gravityEnabled = true;
     bool leftMouseDown = false; // Flag to keep track of whether left mouse button is down
     bool rotateEnabled = false; // Flag to keep track of whether rotation is enabled or disabled
-    //Shape* sq = new Square;
+ 
     Circle* cir = new Circle;
     Square* sq = new Square;
     Triangle* tri = new Triangle;
     Borders* b1 = new Borders;
     Car* car = new Car;
-
-    //b2Body* carBody = car->getCarBody();
-
-
 
     while (running)
     {

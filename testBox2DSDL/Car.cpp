@@ -3,10 +3,10 @@
 void Car::addCar(int x, int y, int w, int h)
 {
     // Add the car body
-    carBody = sq1->addRect(x, y, w, h);
+    carBody = addRect(x, y, w, h);
 
-    wheel1 = c1->addCircle(x - w / 2, y + h / 2, h / 2.5);
-    wheel2 = c1->addCircle(x + w / 2, y + h / 2, h / 2.5);
+    wheel1 = addCircle(x - w / 2, y + h / 2, h / 2.5);
+    wheel2 = addCircle(x + w / 2, y + h / 2, h / 2.5);
     //wheel3 = addCircle(x - w / 2, y - h / 2, h / 2.5); 
     //wheel4 = addCircle(x + w / 2, y - h / 2, h / 2.5);
 
@@ -27,8 +27,3 @@ void Car::addCar(int x, int y, int w, int h)
     //joint3 = (b2RevoluteJoint*)world->CreateJoint(&jointdef3); 
     //joint4 = (b2RevoluteJoint*)world->CreateJoint(&jointdef4);
 }
-/*
-b2Body* Car::getCarBody() {
-    return carBody;
-}
-*/
