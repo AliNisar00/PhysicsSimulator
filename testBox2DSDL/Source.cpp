@@ -12,46 +12,11 @@
 #include "Borders.h"
 
 
-void drawRect(b2Vec2 vertices[], b2Vec2 center)
-{
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_Point points[5];
-    for (int i = 0; i < 4; i++)
-    {
-        points[i] = { (int)(vertices[i].x * M2P), (int)(vertices[i].y * M2P) };
-    }
-    points[4] = { (int)(vertices[0].x * M2P), (int)(vertices[0].y * M2P) };
-    SDL_RenderDrawLines(renderer, points, 5);
-}
 
 
-void drawCircle(SDL_Renderer* renderer, b2Vec2 center, float r, b2Vec2 offset = { 0,0 })
-{
-    const int PRECISION = 30;
-    SDL_SetRenderDrawColor(renderer, 3, 37, 126, 255);
-    SDL_Point vertices[PRECISION];
-    for (int i = 0; i < PRECISION; i++)
-    {
-        float theta = (i / (float)PRECISION) * 2 * b2_pi;
-        float x = r * cos(theta);
-        float y = r * sin(theta);
-        vertices[i] = { (int)((center.x + offset.x + x) * M2P), (int)((center.y + offset.y + y) * M2P) };
-    }
-    SDL_RenderDrawLines(renderer, vertices, PRECISION);
-}
 
 
-void drawTriangle(b2Vec2 vertices[], b2Vec2 center)
-{
-    SDL_SetRenderDrawColor(renderer, 0, 110, 51, 255);
-    SDL_Point points[4];
-    for (int i = 0; i < 3; i++)
-    {
-        points[i] = { (int)(vertices[i].x * M2P), (int)(vertices[i].y * M2P) };
-    }
-    points[3] = { (int)(vertices[0].x * M2P), (int)(vertices[0].y * M2P) };
-    SDL_RenderDrawLines(renderer, points, 4);
-}
+
 
 
 void selectBody(b2Vec2 point)
@@ -92,37 +57,37 @@ void display()
     SDL_SetRenderDrawColor(renderer, 255, 182, 193, 255);
     SDL_RenderClear(renderer);
 
-    b2Body* tmp = world->GetBodyList();
+    //b2Body* tmp = world->GetBodyList();
 
-    while (tmp)
-    {
-        if (tmp->GetFixtureList()->GetShape()->GetType() == b2Shape::e_circle)
-        {
-            b2CircleShape* c = ((b2CircleShape*)tmp->GetFixtureList()->GetShape());
-            drawCircle(renderer, tmp->GetWorldCenter(), c->m_radius, c->m_p);
-        }
-        else if (tmp->GetFixtureList()->GetShape()->GetType() == b2Shape::e_polygon)
-        {
-            b2PolygonShape* poly = (b2PolygonShape*)tmp->GetFixtureList()->GetShape();
-            if (poly->m_count == 4) {
-                b2Vec2 vertices[4];
-                for (int i = 0; i < 4; i++)
-                {
-                    vertices[i] = tmp->GetWorldPoint(poly->m_vertices[i]);
-                }
-                drawRect(vertices, tmp->GetWorldCenter());
-            }
-            if (poly->m_count == 3) {
-                b2Vec2 vertices[3];
-                for (int i = 0; i < 3; i++)
-                {
-                    vertices[i] = tmp->GetWorldPoint(poly->m_vertices[i]);
-                }
-                drawTriangle(vertices, tmp->GetWorldCenter());
-            }
-        }
-        tmp = tmp->GetNext();
-    }
+    //while (tmp)
+    //{
+    //    if (tmp->GetFixtureList()->GetShape()->GetType() == b2Shape::e_circle)
+    //    {
+    //        b2CircleShape* c = ((b2CircleShape*)tmp->GetFixtureList()->GetShape());
+    //        drawCircle(renderer, tmp->GetWorldCenter(), c->m_radius, c->m_p);
+    //    }
+    //    else if (tmp->GetFixtureList()->GetShape()->GetType() == b2Shape::e_polygon)
+    //    {
+    //          b2PolygonShape* poly = (b2PolygonShape*)tmp->GetFixtureList()->GetShape();
+    //        if (poly->m_count == 4) {
+    //            b2Vec2 vertices[4];
+    //            for (int i = 0; i < 4; i++)
+    //            {
+    //                vertices[i] = tmp->GetWorldPoint(poly->m_vertices[i]);
+    //            }
+    //            drawRect(vertices, tmp->GetWorldCenter());
+    //        }
+    //        if (poly->m_count == 3) {
+    //            b2Vec2 vertices[3];
+    //            for (int i = 0; i < 3; i++)
+    //            {
+    //                vertices[i] = tmp->GetWorldPoint(poly->m_vertices[i]);
+    //            }
+    //            drawTriangle(vertices, tmp->GetWorldCenter());
+    //        }
+    //    }
+    //    tmp = tmp->GetNext();
+    //}
 
     SDL_RenderPresent(renderer);
 }
@@ -147,12 +112,17 @@ int main(int argc, char** argv)
     bool gravityEnabled = true;
     bool leftMouseDown = false; // Flag to keep track of whether left mouse button is down
     bool rotateEnabled = false; // Flag to keep track of whether rotation is enabled or disabled
-    //Shape* sq = new Square;
+    
     Circle* cir = new Circle;
     Square* sq = new Square;
     Triangle* tri = new Triangle;
     Borders* b1 = new Borders;
     Car* car = new Car;
+
+    Shape* shape = new Square;
+    Shape* shape1 = new Triangle;
+    Shape* shape2 = new Circle;
+
 
     b2Body* carBody = car->getCarBody();
 
@@ -306,6 +276,9 @@ int main(int argc, char** argv)
             }
         }
 
+        sq->displayShape();
+        shape1->displayShape(); 
+        shape2->displayShape();
         display();
         world->Step(1.0f / 60.0f, 8, 3);  // update
         if (1000.0f / 60.0f > SDL_GetTicks() - start)
