@@ -2,7 +2,7 @@
 #include "Square.h"
 #include "Circle.h"
 
-class Car : public Square, public Circle
+class Car
 {
     Square* sq1;
     Circle* c1;
