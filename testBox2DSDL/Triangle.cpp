@@ -25,7 +25,21 @@ b2Body* Triangle::addTriangle(int x, int y, int sideLength, bool dyn)
     return body;
 }
 
+void Triangle::drawTriangle(b2Vec2 vertices[], b2Vec2 center)
+{
+    SDL_SetRenderDrawColor(renderer, 0, 110, 51, 255);
+    SDL_Point points[4];
+    for (int i = 0; i < 3; i++)
+    {
+        points[i] = { (int)(vertices[i].x * M2P), (int)(vertices[i].y * M2P) };
+    }
+    points[3] = { (int)(vertices[0].x * M2P), (int)(vertices[0].y * M2P) };
+    SDL_RenderDrawLines(renderer, points, 4);
+}
+
 void Triangle::displayShape() 
 {
 
 }
+
+

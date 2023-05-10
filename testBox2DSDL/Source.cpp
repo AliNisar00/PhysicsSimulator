@@ -11,47 +11,9 @@
 #include "Car.h"
 #include "Borders.h"
 
-
-void drawRect(b2Vec2 vertices[], b2Vec2 center)
-{
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_Point points[5];
-    for (int i = 0; i < 4; i++)
-    {
-        points[i] = { (int)(vertices[i].x * M2P), (int)(vertices[i].y * M2P) };
-    }
-    points[4] = { (int)(vertices[0].x * M2P), (int)(vertices[0].y * M2P) };
-    SDL_RenderDrawLines(renderer, points, 5);
-}
-
-
-void drawCircle(SDL_Renderer* renderer, b2Vec2 center, float r, b2Vec2 offset = { 0,0 })
-{
-    const int PRECISION = 30;
-    SDL_SetRenderDrawColor(renderer, 3, 37, 126, 255);
-    SDL_Point vertices[PRECISION];
-    for (int i = 0; i < PRECISION; i++)
-    {
-        float theta = (i / (float)PRECISION) * 2 * b2_pi;
-        float x = r * cos(theta);
-        float y = r * sin(theta);
-        vertices[i] = { (int)((center.x + offset.x + x) * M2P), (int)((center.y + offset.y + y) * M2P) };
-    }
-    SDL_RenderDrawLines(renderer, vertices, PRECISION);
-}
-
-
-void drawTriangle(b2Vec2 vertices[], b2Vec2 center)
-{
-    SDL_SetRenderDrawColor(renderer, 0, 110, 51, 255);
-    SDL_Point points[4];
-    for (int i = 0; i < 3; i++)
-    {
-        points[i] = { (int)(vertices[i].x * M2P), (int)(vertices[i].y * M2P) };
-    }
-    points[3] = { (int)(vertices[0].x * M2P), (int)(vertices[0].y * M2P) };
-    SDL_RenderDrawLines(renderer, points, 4);
-}
+Square square;
+Triangle triangle;
+Circle circle;
 
 
 void selectBody(b2Vec2 point)
@@ -99,7 +61,7 @@ void display()
         if (tmp->GetFixtureList()->GetShape()->GetType() == b2Shape::e_circle)
         {
             b2CircleShape* c = ((b2CircleShape*)tmp->GetFixtureList()->GetShape());
-            drawCircle(renderer, tmp->GetWorldCenter(), c->m_radius, c->m_p);
+            circle.drawCircle(renderer, tmp->GetWorldCenter(), c->m_radius, c->m_p);
         }
         else if (tmp->GetFixtureList()->GetShape()->GetType() == b2Shape::e_polygon)
         {
@@ -110,7 +72,7 @@ void display()
                 {
                     vertices[i] = tmp->GetWorldPoint(poly->m_vertices[i]);
                 }
-                drawRect(vertices, tmp->GetWorldCenter());
+                square.drawRect(vertices, tmp->GetWorldCenter());
             }
             if (poly->m_count == 3) {
                 b2Vec2 vertices[3];
@@ -118,7 +80,7 @@ void display()
                 {
                     vertices[i] = tmp->GetWorldPoint(poly->m_vertices[i]);
                 }
-                drawTriangle(vertices, tmp->GetWorldCenter());
+                triangle.drawTriangle(vertices, tmp->GetWorldCenter());
             }
         }
         tmp = tmp->GetNext();
