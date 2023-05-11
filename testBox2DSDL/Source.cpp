@@ -494,159 +494,232 @@ int main(int argc, char** argv)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // main program loop
     while (running)
     {
         start = SDL_GetTicks();
         while (SDL_PollEvent(&event))
         {
-            /*
             if (currentScreen == Screen::Welcome)
             {
-
-            }
-            else if (currentScreen == Screen::Simulator)
-            {
-
-            }
-            */
-
-
-
-            switch (event.type)
-            {
-            case SDL_QUIT:
-                running = false;
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button == SDL_BUTTON_RIGHT) {
-                    if (addingRect) {
-                        sq->addRect(event.button.x, event.button.y, 15, 15, true);
-
-                    }
-                    else if (addingTriangle) {
-                        tri->addTriangle(event.button.x, event.button.y, 1, true);
-                    }
-                    else if (addingCircle) {
-                        cir->addCircle(event.button.x, event.button.y, 8, true);
-                    }
-                }
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    selectBody(b2Vec2(event.button.x * P2M, event.button.y * P2M));
-                    leftMouseDown = true; // Set flag to indicate left mouse button is down
-                }
-                break;
-            case SDL_MOUSEMOTION:
-                if (selectedBody && leftMouseDown) // Update selected body position only if left mouse button is down
-                {
-                    selectedBody->SetTransform(b2Vec2(event.motion.x * P2M, event.motion.y * P2M), selectedBody->GetAngle());
-                }
-                break;
-            case SDL_MOUSEBUTTONUP:
-                selectedBody = nullptr;
-                leftMouseDown = false; // Reset flag when left mouse button is released
-                break;
-            case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_s) {
-                    addingRect = true;
-                    addingTriangle = false;
-                    addingCircle = false;
-                }
-                else if (event.key.keysym.sym == SDLK_t) {
-                    addingTriangle = true;
-                    addingRect = false;
-                    addingCircle = false;
-                }
-                else if (event.key.keysym.sym == SDLK_c) {
-                    addingCircle = true;
-                    addingRect = false;
-                    addingTriangle = false;
-                }
-                else if (event.key.keysym.sym == SDLK_w) {
-
-                    windEnabled = !windEnabled;
-
-                    if (windEnabled) {
-                        world->SetGravity(b2Vec2(9.81f, 9.81f));
-                    }
-                    else {
-                        world->SetGravity(b2Vec2(0.0f, 9.81f));
-                    }
-                }
-                else if (event.key.keysym.sym == SDLK_g) {
-
-                    gravityEnabled = !gravityEnabled;
-
-                    if (gravityEnabled) {
-                        world->SetGravity(b2Vec2(0.0f, 9.81f));
-                    }
-                    else {
-                        world->SetGravity(b2Vec2(0.0f, 0.0f));
-                    }
-                }
-                else if (event.key.keysym.sym == SDLK_u)
-                {
-                    world->SetGravity(b2Vec2(0.0f, -9.81f));
-                }
-                else if (event.key.keysym.sym == SDLK_b)
-                {
-                    cir->addCircle(WIDTH / 7, HEIGHT / 7, 2.5, true);
-                }
-                else if (event.key.keysym.sym == SDLK_r)
-                {
-                    // destroy all Box2D objects
-                    destroyObjects();
-                    //add borders again
-                    b1->addBorders();
-                }
-                else if (event.key.keysym.sym == SDLK_p) { // Toggle rotation
-                    rotateEnabled = !rotateEnabled;
-
-                    if (!rotateEnabled) {
-
-                        for (b2Body* body = world->GetBodyList(); body != nullptr; body = body->GetNext()) {
-
-                            if (body->GetType() == b2_dynamicBody) {
-                                body->SetAngularVelocity(0); // Set the angular velocity of the body to 0
-                            }
-                        }
-                    }
-
-                }
-                else if (event.key.keysym.sym == SDLK_m) { // Toggle rotation
-                    car->addCar(WIDTH - 350, HEIGHT / 2, 90, 30);
-                }
-                else if (event.key.keysym.sym == SDLK_LEFT) { // Move car backwards
-                    car->carBody->ApplyForceToCenter(b2Vec2(-150.0f, 0.0f), true);
-                }
-                else if (event.key.keysym.sym == SDLK_RIGHT) { // Move car forwards
-                    car->carBody->ApplyForceToCenter(b2Vec2(150.0f, 0.0f), true);
-                }
-                else if (event.key.keysym.sym == SDLK_UP) { // Move car upwards in zero gravity
-                    car->carBody->ApplyForceToCenter(b2Vec2(.0f, -150.0f), true);
-                }
-                else if (event.key.keysym.sym == SDLK_DOWN) { // Move car downwards in zero gravity
-                    car->carBody->ApplyForceToCenter(b2Vec2(0.0f, 150.0f), true);
-                }
-                else if (event.key.keysym.sym == SDLK_ESCAPE)
+                // User requests quit
+                if (event.type == SDL_QUIT)
                 {
                     running = false;
                 }
-                break;
+                // User clicks the "Start" button
+                else if (event.type != SDL_MOUSEBUTTONDOWN)
+                {
+                    // Clear the screen
+                    SDL_RenderClear(renderer);
+
+                    // Render the background texture
+                    SDL_RenderCopy(renderer, bgTexture, NULL, NULL);
+
+                    // Render the title message texture
+                    SDL_RenderCopy(renderer, messageTexture, NULL, &messageRect);
+
+                    // Render the group names texture
+                    SDL_RenderCopy(renderer, groupTexture, NULL, &groupRect);
+
+                    // Render the "Start" button texture
+                    SDL_RenderCopy(renderer, startTexture, NULL, &startRect);
+
+                    SDL_RenderCopy(renderer, instructionsTexture, NULL, &instructionsRect);
+
+                    SDL_RenderCopy(renderer, C_instructionsTexture, NULL, &C_instructionsRect);
+
+                    SDL_RenderCopy(renderer, S_instructionsTexture, NULL, &S_instructionsRect);
+
+                    SDL_RenderCopy(renderer, T_instructionsTexture, NULL, &T_instructionsRect);
+
+                    SDL_RenderCopy(renderer, B_instructionsTexture, NULL, &B_instructionsRect);
+
+                    SDL_RenderCopy(renderer, M_instructionsTexture, NULL, &M_instructionsRect);
+
+                    SDL_RenderCopy(renderer, W_instructionsTexture, NULL, &W_instructionsRect);
+
+                    SDL_RenderCopy(renderer, G_instructionsTexture, NULL, &G_instructionsRect);
+
+                    SDL_RenderCopy(renderer, U_instructionsTexture, NULL, &U_instructionsRect);
+
+                    SDL_RenderCopy(renderer, P_instructionsTexture, NULL, &P_instructionsRect);
+
+                    SDL_RenderCopy(renderer, R_instructionsTexture, NULL, &R_instructionsRect);
+
+                    SDL_RenderCopy(renderer, LR_instructionsTexture, NULL, &LR_instructionsRect);
+
+                    // Update the screen
+                    SDL_RenderPresent(renderer);
+
+                }
+                else
+                {
+                    int mouseX, mouseY;
+                    SDL_GetMouseState(&mouseX, &mouseY);
+                    if (mouseX >= startRect.x && mouseX < startRect.x + startRect.w && mouseY >= startRect.y && mouseY < startRect.y + startRect.h)
+                    {
+                        SDL_DestroyTexture(messageTexture);
+
+                        SDL_DestroyTexture(groupTexture);
+
+                        SDL_DestroyTexture(startTexture);
+
+                        SDL_DestroyTexture(instructionsTexture);
+
+                        SDL_DestroyTexture(C_instructionsTexture);
+
+                        SDL_DestroyTexture(S_instructionsTexture);
+
+                        SDL_DestroyTexture(T_instructionsTexture);
+
+                        SDL_DestroyTexture(B_instructionsTexture);
+
+                        SDL_DestroyTexture(M_instructionsTexture);
+
+                        SDL_DestroyTexture(W_instructionsTexture);
+
+                        SDL_DestroyTexture(G_instructionsTexture);
+
+                        SDL_DestroyTexture(U_instructionsTexture);
+
+                        SDL_DestroyTexture(P_instructionsTexture);
+
+                        SDL_DestroyTexture(R_instructionsTexture);
+
+                        SDL_DestroyTexture(LR_instructionsTexture);
+
+                        SDL_DestroyTexture(bgTexture);
+
+                        Mix_FreeChunk(bgSound);
+
+                        currentScreen = Screen::Simulator;
+                    }
+                }
+            }
+            else if (currentScreen == Screen::Simulator)
+            {
+                switch (event.type)
+                {
+                case SDL_QUIT:
+                    running = false;
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if (event.button.button == SDL_BUTTON_RIGHT) {
+                        if (addingRect) {
+                            sq->addRect(event.button.x, event.button.y, 15, 15, true);
+
+                        }
+                        else if (addingTriangle) {
+                            tri->addTriangle(event.button.x, event.button.y, 1, true);
+                        }
+                        else if (addingCircle) {
+                            cir->addCircle(event.button.x, event.button.y, 8, true);
+                        }
+                    }
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+                        selectBody(b2Vec2(event.button.x * P2M, event.button.y * P2M));
+                        leftMouseDown = true; // Set flag to indicate left mouse button is down
+                    }
+                    break;
+                case SDL_MOUSEMOTION:
+                    if (selectedBody && leftMouseDown) // Update selected body position only if left mouse button is down
+                    {
+                        selectedBody->SetTransform(b2Vec2(event.motion.x * P2M, event.motion.y * P2M), selectedBody->GetAngle());
+                    }
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    selectedBody = nullptr;
+                    leftMouseDown = false; // Reset flag when left mouse button is released
+                    break;
+                case SDL_KEYDOWN:
+                    if (event.key.keysym.sym == SDLK_s) {
+                        addingRect = true;
+                        addingTriangle = false;
+                        addingCircle = false;
+                    }
+                    else if (event.key.keysym.sym == SDLK_t) {
+                        addingTriangle = true;
+                        addingRect = false;
+                        addingCircle = false;
+                    }
+                    else if (event.key.keysym.sym == SDLK_c) {
+                        addingCircle = true;
+                        addingRect = false;
+                        addingTriangle = false;
+                    }
+                    else if (event.key.keysym.sym == SDLK_w) {
+
+                        windEnabled = !windEnabled;
+
+                        if (windEnabled) {
+                            world->SetGravity(b2Vec2(9.81f, 9.81f));
+                        }
+                        else {
+                            world->SetGravity(b2Vec2(0.0f, 9.81f));
+                        }
+                    }
+                    else if (event.key.keysym.sym == SDLK_g) {
+
+                        gravityEnabled = !gravityEnabled;
+
+                        if (gravityEnabled) {
+                            world->SetGravity(b2Vec2(0.0f, 9.81f));
+                        }
+                        else {
+                            world->SetGravity(b2Vec2(0.0f, 0.0f));
+                        }
+                    }
+                    else if (event.key.keysym.sym == SDLK_u)
+                    {
+                        world->SetGravity(b2Vec2(0.0f, -9.81f));
+                    }
+                    else if (event.key.keysym.sym == SDLK_b)
+                    {
+                        cir->addCircle(WIDTH / 7, HEIGHT / 7, 2.5, true);
+                    }
+                    else if (event.key.keysym.sym == SDLK_r)
+                    {
+                        // destroy all Box2D objects
+                        destroyObjects();
+                        //add borders again
+                        b1->addBorders();
+                    }
+                    else if (event.key.keysym.sym == SDLK_p) { // Toggle rotation
+                        rotateEnabled = !rotateEnabled;
+
+                        if (!rotateEnabled) {
+
+                            for (b2Body* body = world->GetBodyList(); body != nullptr; body = body->GetNext()) {
+
+                                if (body->GetType() == b2_dynamicBody) {
+                                    body->SetAngularVelocity(0); // Set the angular velocity of the body to 0
+                                }
+                            }
+                        }
+
+                    }
+                    else if (event.key.keysym.sym == SDLK_m) { // Toggle rotation
+                        car->addCar(WIDTH - 350, HEIGHT / 2, 90, 30);
+                    }
+                    else if (event.key.keysym.sym == SDLK_LEFT) { // Move car backwards
+                        car->carBody->ApplyForceToCenter(b2Vec2(-150.0f, 0.0f), true);
+                    }
+                    else if (event.key.keysym.sym == SDLK_RIGHT) { // Move car forwards
+                        car->carBody->ApplyForceToCenter(b2Vec2(150.0f, 0.0f), true);
+                    }
+                    else if (event.key.keysym.sym == SDLK_UP) { // Move car upwards in zero gravity
+                        car->carBody->ApplyForceToCenter(b2Vec2(.0f, -150.0f), true);
+                    }
+                    else if (event.key.keysym.sym == SDLK_DOWN) { // Move car downwards in zero gravity
+                        car->carBody->ApplyForceToCenter(b2Vec2(0.0f, 150.0f), true);
+                    }
+                    else if (event.key.keysym.sym == SDLK_ESCAPE)
+                    {
+                        running = false;
+                    }
+                    break;
+                }
             }
         }
 
@@ -681,6 +754,12 @@ int main(int argc, char** argv)
     delete tri;
     delete car;
     //carBody = nullptr;
+
+    // Free the font
+    TTF_CloseFont(font);
+    // Quit TTF
+    TTF_Quit();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
