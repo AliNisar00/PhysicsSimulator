@@ -69,4 +69,22 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="ArianaVioleta-dz2K.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="Machine BT.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="background.jpeg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="stranger-things-theme-song.mp3">
+      <Filter>Resource Files</Filter>
+    </Media>
+  </ItemGroup>
 </Project>

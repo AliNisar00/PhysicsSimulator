@@ -161,6 +161,16 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="ArianaVioleta-dz2K.ttf" />
+    <Font Include="Machine BT.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="background.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="stranger-things-theme-song.mp3" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
