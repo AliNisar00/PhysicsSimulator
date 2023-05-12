@@ -15,13 +15,14 @@
 #include "Borders.h"
 #include "display.h"
 
+// enumerators to select which screen to render in the program window
 enum class Screen
 {
     Welcome,
     Simulator
 };
 
-
+// this function helps select the body that is to be moved by the user mouse movement
 void selectBody(b2Vec2 point)
 {
     // Check if the mouse is hovering over any of the bodies in the physics world
@@ -38,6 +39,7 @@ void selectBody(b2Vec2 point)
     }
 }
 
+// initializes the physics world
 void init()
 {
     world = new b2World(b2Vec2(0.0f, 9.81f));
@@ -45,6 +47,7 @@ void init()
     b2.addBorders();
 }
 
+// destroys objects in the physics world
 void destroyObjects()
 {
     b2Body* body = world->GetBodyList();  // get the first body
