@@ -1,3 +1,5 @@
+// The Car can be converted to a rover-type vehicle that can climb surfaces in zero-gravity by uncommenting 
+// the code below for wheel3,4 and jointdef3,4.
 #include "Car.h"
 
 void Car::addCar(int x, int y, int w, int h)

@@ -4,7 +4,6 @@
 
 class Car : public Square, public Circle
 {
-
     b2Body* wheel1;
     b2Body* wheel2;
     b2Body* wheel3;

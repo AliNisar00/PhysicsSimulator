@@ -1,3 +1,4 @@
+// general constants are initialized here
 #include "Constants.h"
 
 const int WIDTH = 1280;

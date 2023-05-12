@@ -1,5 +1,5 @@
+// Borders for the environment
 #include "Borders.h"
-
 
 void Borders::addBorders()
 {

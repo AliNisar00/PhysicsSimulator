@@ -1,3 +1,4 @@
+// parent Shape class for different shapes
 #pragma once
 #include "InitialSetup.h"
 #include "Constants.h"
