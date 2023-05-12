@@ -746,13 +746,18 @@ int main(int argc, char** argv)
 
                 // Update the screen
                 SDL_RenderPresent(renderer);
-
-                display();
-                world->Step(1.0f / 60.0f, 8, 3);  // update
-                if (1000.0f / 60.0f > SDL_GetTicks() - start)
-                    SDL_Delay(1000.0f / 60.0f - (SDL_GetTicks() - start));
             }
         }
+
+        if (currentScreen == Screen::Simulator)
+        {
+            world->Step(1.0f / 60.0f, 8, 3);  // update
+            display();
+        }
+
+        // enforcing frame rate
+        if (1000.0f / 60.0f > SDL_GetTicks() - start)
+            SDL_Delay(1000.0f / 60.0f - (SDL_GetTicks() - start));
     }
 
     delete sq;
