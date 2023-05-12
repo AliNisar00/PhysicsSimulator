@@ -751,8 +751,17 @@ int main(int argc, char** argv)
 
         if (currentScreen == Screen::Simulator)
         {
-            world->Step(1.0f / 60.0f, 8, 3);  // update
+            // updating the physics simulation
+            world->Step(1.0f / 60.0f, 8, 3);
+
+            // clearing the renderer
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderClear(renderer);
+
             display();
+
+            // updating the screen
+            SDL_RenderPresent(renderer);
         }
 
         // enforcing frame rate
