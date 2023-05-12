@@ -168,7 +168,7 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the message on the screen
     SDL_Rect messageRect;
-    messageRect.x = (720 - messageWidth) / 2;
+    messageRect.x = (1265 - messageWidth) / 2;
     messageRect.y = 20;
     messageRect.w = messageWidth;
     messageRect.h = messageHeight;
@@ -192,7 +192,7 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the group names on the screen
     SDL_Rect groupRect;
-    groupRect.x = (720 - groupWidth) / 2;
+    groupRect.x = (1265 - groupWidth) / 2;
     groupRect.y = 90;
     groupRect.w = groupWidth;
     groupRect.h = groupHeight;
@@ -214,14 +214,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the "Start button on the screen
     SDL_Rect startRect;
-    startRect.x = (720 - startWidth) / 2;
-    startRect.y = 120;
+    startRect.x = (1265 - startWidth) / 2;
+    startRect.y = 127;
     startRect.w = startWidth;
     startRect.h = startHeight;
 
     // Create a surface with the circle instructions
     SDL_Surface* C_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press c and then right click to spawn circle.",
+        "Press 'C' and then right click to spawn circle",
         nametextColor);
 
     // Create a texture from the surface
@@ -236,14 +236,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect C_instructionsRect;
-    C_instructionsRect.x = (720 - C_instructionsWidth) / 2;
+    C_instructionsRect.x = (1265 - C_instructionsWidth) / 2;
     C_instructionsRect.y = 240;
     C_instructionsRect.w = C_instructionsWidth;
     C_instructionsRect.h = C_instructionsHeight;
 
     // Create a surface with the square instructions
     SDL_Surface* S_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press s and then right click to spawn square.",
+        "Press 'S' and then right click to spawn square",
         nametextColor);
 
     // Create a texture from the surface
@@ -258,14 +258,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect S_instructionsRect;
-    S_instructionsRect.x = (720 - S_instructionsWidth) / 2;
+    S_instructionsRect.x = (1265 - S_instructionsWidth) / 2;
     S_instructionsRect.y = 270;
     S_instructionsRect.w = S_instructionsWidth;
     S_instructionsRect.h = S_instructionsHeight;
 
     // Create a surface with the triangle instructions
     SDL_Surface* T_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press t and then right click to spawn triangle.",
+        "Press 'T' and then right click to spawn triangle",
         nametextColor);
 
     // Create a texture from the surface
@@ -280,14 +280,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect T_instructionsRect;
-    T_instructionsRect.x = (720 - T_instructionsWidth) / 2;
+    T_instructionsRect.x = (1265 - T_instructionsWidth) / 2;
     T_instructionsRect.y = 300;
     T_instructionsRect.w = T_instructionsWidth;
     T_instructionsRect.h = T_instructionsHeight;
 
     // Create a surface with the small circle instructions
     SDL_Surface* B_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press b and then right click to spawn small circle.",
+        "Press 'B' and then right click to spawn small circle",
         nametextColor);
 
     // Create a texture from the surface
@@ -302,14 +302,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect B_instructionsRect;
-    B_instructionsRect.x = (720 - B_instructionsWidth) / 2;
+    B_instructionsRect.x = (1265 - B_instructionsWidth) / 2;
     B_instructionsRect.y = 330;
     B_instructionsRect.w = B_instructionsWidth;
     B_instructionsRect.h = B_instructionsHeight;
 
     // Create a surface with the car instructions
     SDL_Surface* M_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press m to spawn a car.",
+        "Press 'M' to spawn a car",
         nametextColor);
 
     // Create a texture from the surface
@@ -324,14 +324,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect M_instructionsRect;
-    M_instructionsRect.x = (720 - M_instructionsWidth) / 2;
+    M_instructionsRect.x = (1265 - M_instructionsWidth) / 2;
     M_instructionsRect.y = 360;
     M_instructionsRect.w = M_instructionsWidth;
     M_instructionsRect.h = M_instructionsHeight;
 
     // Create a surface with the wind instructions
     SDL_Surface* W_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press w to enable wind affect.",
+        "Press 'W' to toggle wind affect",
         nametextColor);
 
     // Create a texture from the surface
@@ -346,14 +346,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect W_instructionsRect;
-    W_instructionsRect.x = (720 - W_instructionsWidth) / 2;
+    W_instructionsRect.x = (1265 - W_instructionsWidth) / 2;
     W_instructionsRect.y = 390;
     W_instructionsRect.w = W_instructionsWidth;
     W_instructionsRect.h = W_instructionsHeight;
 
     // Create a surface with the zero gravity instructions
     SDL_Surface* G_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press g to enable zero gravity affect.",
+        "Press 'G' to toggle gravity",
         nametextColor);
 
     // Create a texture from the surface
@@ -368,14 +368,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect G_instructionsRect;
-    G_instructionsRect.x = (720 - G_instructionsWidth) / 2;
+    G_instructionsRect.x = (1265 - G_instructionsWidth) / 2;
     G_instructionsRect.y = 420;
     G_instructionsRect.w = G_instructionsWidth;
     G_instructionsRect.h = G_instructionsHeight;
 
     // Create a surface with the reverse gravity instructions
     SDL_Surface* U_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press u to enable reverse gravity affect.",
+        "Press 'U' to enable reverse gravity affect",
         nametextColor);
 
     // Create a texture from the surface
@@ -390,14 +390,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect U_instructionsRect;
-    U_instructionsRect.x = (720 - U_instructionsWidth) / 2;
+    U_instructionsRect.x = (1265 - U_instructionsWidth) / 2;
     U_instructionsRect.y = 450;
     U_instructionsRect.w = U_instructionsWidth;
     U_instructionsRect.h = U_instructionsHeight;
 
     // Create a surface with the rotate instructions
     SDL_Surface* P_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press p to rotate all objects.",
+        "Press 'P' to rotate all objects",
         nametextColor);
 
     // Create a texture from the surface
@@ -412,14 +412,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect P_instructionsRect;
-    P_instructionsRect.x = (720 - P_instructionsWidth) / 2;
+    P_instructionsRect.x = (1265 - P_instructionsWidth) / 2;
     P_instructionsRect.y = 480;
     P_instructionsRect.w = P_instructionsWidth;
     P_instructionsRect.h = P_instructionsHeight;
 
     // Create a surface with the reset instructions
     SDL_Surface* R_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press r to reset all objects.",
+        "Press 'R' to destroy all the objects",
         nametextColor);
 
     // Create a texture from the surface
@@ -434,14 +434,14 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect R_instructionsRect;
-    R_instructionsRect.x = (720 - R_instructionsWidth) / 2;
+    R_instructionsRect.x = (1265 - R_instructionsWidth) / 2;
     R_instructionsRect.y = 510;
     R_instructionsRect.w = R_instructionsWidth;
     R_instructionsRect.h = R_instructionsHeight;
 
     // Create a surface with the move car instructions
     SDL_Surface* LR_instructionsSurface = TTF_RenderText_Solid(instructionfont,
-        "Press left/right arrow to move car.",
+        "Press left/right arrow key to move car",
         nametextColor);
 
     // Create a texture from the surface
@@ -456,7 +456,7 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect LR_instructionsRect;
-    LR_instructionsRect.x = (720 - LR_instructionsWidth) / 2;
+    LR_instructionsRect.x = (1265 - LR_instructionsWidth) / 2;
     LR_instructionsRect.y = 540;
     LR_instructionsRect.w = LR_instructionsWidth;
     LR_instructionsRect.h = LR_instructionsHeight;
@@ -478,7 +478,7 @@ int main(int argc, char** argv)
 
     // Create a rectangle to position the instructions on the screen
     SDL_Rect instructionsRect;
-    instructionsRect.x = (720 - instructionsWidth) / 2;
+    instructionsRect.x = (1265 - instructionsWidth) / 2;
     instructionsRect.y = 200;
     instructionsRect.w = instructionsWidth;
     instructionsRect.h = instructionsHeight;
@@ -771,7 +771,6 @@ int main(int argc, char** argv)
     delete cir;
     delete tri;
     delete car;
-    //carBody = nullptr;
 
     // Free the font
     TTF_CloseFont(font);
