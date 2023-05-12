@@ -498,8 +498,13 @@ int main(int argc, char** argv)
     while (running)
     {
         start = SDL_GetTicks();
+
+        // Clear the screen
+        SDL_RenderClear(renderer);
+
         while (SDL_PollEvent(&event))
         {
+
             if (currentScreen == Screen::Welcome)
             {
                 // User requests quit
@@ -720,32 +725,34 @@ int main(int argc, char** argv)
                     }
                     break;
                 }
-            }
-        }
-
-        // Update selected body position if left mouse button is still down
-        if (selectedBody && leftMouseDown)
-        {
-            int mouseX, mouseY;
-            SDL_GetMouseState(&mouseX, &mouseY);
-            selectedBody->SetTransform(b2Vec2(mouseX * P2M, mouseY * P2M), selectedBody->GetAngle());
-        }
-
-        // Apply rotation if enabled
-        if (rotateEnabled) {
-            // Apply rotation to each object
-            for (b2Body* body = world->GetBodyList(); body != nullptr; body = body->GetNext()) {
-                // Check if body is a dynamic type
-                if (body->GetType() == b2_dynamicBody) {
-                    body->SetAngularVelocity(50); // Set the angular velocity of the body to 50
+                // Update selected body position if left mouse button is still down
+                if (selectedBody && leftMouseDown)
+                {
+                    int mouseX, mouseY;
+                    SDL_GetMouseState(&mouseX, &mouseY);
+                    selectedBody->SetTransform(b2Vec2(mouseX * P2M, mouseY * P2M), selectedBody->GetAngle());
                 }
+
+                // Apply rotation if enabled
+                if (rotateEnabled) {
+                    // Apply rotation to each object
+                    for (b2Body* body = world->GetBodyList(); body != nullptr; body = body->GetNext()) {
+                        // Check if body is a dynamic type
+                        if (body->GetType() == b2_dynamicBody) {
+                            body->SetAngularVelocity(50); // Set the angular velocity of the body to 50
+                        }
+                    }
+                }
+
+                // Update the screen
+                SDL_RenderPresent(renderer);
+
+                display();
+                world->Step(1.0f / 60.0f, 8, 3);  // update
+                if (1000.0f / 60.0f > SDL_GetTicks() - start)
+                    SDL_Delay(1000.0f / 60.0f - (SDL_GetTicks() - start));
             }
         }
-
-        display();
-        world->Step(1.0f / 60.0f, 8, 3);  // update
-        if (1000.0f / 60.0f > SDL_GetTicks() - start)
-            SDL_Delay(1000.0f / 60.0f - (SDL_GetTicks() - start));
     }
 
     delete sq;
