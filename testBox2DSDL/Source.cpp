@@ -1,3 +1,4 @@
+// THIS IS THE MAIN .CPP FILE THAT CONTAINS THE MAIN() FUNCTION
 #include <iostream>
 #include <box2d.h>
 #include <SDL.h>
@@ -58,7 +59,7 @@ void destroyObjects()
     }
 }
 
-
+// the main program function
 int main(int argc, char** argv)
 {
     // SDL initialization

@@ -1,3 +1,4 @@
+// general constants used within the program
 #pragma once
 
 extern const int WIDTH;

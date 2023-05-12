@@ -1,3 +1,4 @@
+// initial setup for the simulator
 #pragma once
 #include <iostream>
 #include <SDL.h>
