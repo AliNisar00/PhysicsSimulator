@@ -4,11 +4,7 @@
 
 class Car : public Square, public Circle
 {
-    Square* sq1;
-    Circle* c1;
 
-public:
-    b2Body* carBody;
     b2Body* wheel1;
     b2Body* wheel2;
     b2Body* wheel3;
@@ -18,5 +14,8 @@ public:
     b2RevoluteJoint* joint3;
     b2RevoluteJoint* joint4;
 
+public:
+
+    b2Body* carBody;
     void addCar(int x, int y, int w, int h);
 };

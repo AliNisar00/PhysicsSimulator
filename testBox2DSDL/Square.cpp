@@ -19,6 +19,18 @@ b2Body* Square::addRect(int x, int y, int w, int h, bool dyn)
     return body;
 }
 
+void Square::drawRect(b2Vec2 vertices[], b2Vec2 center)
+{
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_Point points[5];
+    for (int i = 0; i < 4; i++)
+    {
+        points[i] = { (int)(vertices[i].x * M2P), (int)(vertices[i].y * M2P) };
+    }
+    points[4] = { (int)(vertices[0].x * M2P), (int)(vertices[0].y * M2P) };
+    SDL_RenderDrawLines(renderer, points, 5);
+}
+
 void Square::displayShape()
 {
 
