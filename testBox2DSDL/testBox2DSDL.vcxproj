@@ -163,9 +163,6 @@
     <ClInclude Include="Triangle.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-  </ItemGroup>
-  <ItemGroup>
     <Font Include="ArianaVioleta-dz2K.ttf" />
     <Font Include="Machine BT.ttf" />
   </ItemGroup>
@@ -174,6 +171,9 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="stranger-things-theme-song.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
