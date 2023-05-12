@@ -743,9 +743,6 @@ int main(int argc, char** argv)
                         }
                     }
                 }
-
-                // Update the screen
-                SDL_RenderPresent(renderer);
             }
         }
 
