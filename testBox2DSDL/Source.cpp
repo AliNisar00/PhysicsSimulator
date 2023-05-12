@@ -701,6 +701,10 @@ int main(int argc, char** argv)
                     {
                         running = false;
                     }
+                    else if (event.key.keysym.sym == SDLK_l) // spawn a static rectangle
+                    {
+                        sq->addRect(WIDTH - 350, HEIGHT / 2, 250, 8, false);
+                    }
                     break;
                 }
             }
