@@ -4,7 +4,7 @@ This is our HU Spring'23 OOP & DM course's project. The back-end utilizes Box2D 
 To build this project on your own machine using Visual Studio IDE:
 1. Download Visual Studio from https://visualstudio.microsoft.com/ and select the "Desktop Development with C++" workload from the installer.
 2. Clone the repository, either from Visual Studio clone window or from GitHub directly. Remember for Visual Studio, our solution name and project name are "testBox2DSDL", reminiscent of the first testing (we will try to change that if time permits us).
-3. Extract the Box2D and SDL2 libraries and place the extracted folders in the root of C:\, i.e. C:\Box2D and C:\SDL2. The include files for these libraries are here: C:\Box2D\include\box2d and C:\SDL2\include. And the library (.lib) files are here: C:\Box2D\build\bin\Debug and C:\SDL2\lib\x64.
+3. Extract the Box2D and SDL2 librar .rar files and place the extracted folders in the root of C:\, i.e. C:\Box2D and C:\SDL2. The include files for these libraries are here: C:\Box2D\include\box2d and C:\SDL2\include. And the library (.lib) files are here: C:\Box2D\build\bin\Debug and C:\SDL2\lib\x64.
 4. Now, you can run the project from Visual Studio and VS will build the project for you and run it.
 
 If there are build errors regarding missing include or library files, you would need to set up your VS (don't worry, you only need to do this once):
