@@ -22,6 +22,8 @@ SDL2_mixer.lib
 SDL2_image.lib
 
 Then click Ok in the popup, and then Apply and Ok in the main window.
+
 4. Now, you can run the project from Visual Studio and VS will build the project for you and run it.
+
 
 As always, if you encounter any problems, you can contact me. For this project specifically, those who are from my university, can contact me via email or MS Teams.
